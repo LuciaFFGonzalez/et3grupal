@@ -23,7 +23,7 @@ class GeneralUIManager {
         }
 
         const table = document.createElement('table');
-        table.className = 'team-data__table';
+        table.className = 'team-data__table bordeado';
 
         const headerRow = document.createElement('tr');
         ['Entrega', 'Nombre', 'DNI', 'Horas'].forEach((label) => {

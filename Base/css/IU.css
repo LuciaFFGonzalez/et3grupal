@@ -86,13 +86,49 @@ modal error
 		transform: translate(-50%, -50%);
 	}
 
-	#modal_action_overlay{
-		position: fixed;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		background-color: rgba(0, 0, 0, 0.5);
-		display: none;
-		z-index: 9998;
-	}
+        #modal_action_overlay{
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+                display: none;
+                z-index: 9998;
+        }
+
+/*
+Team data block
+*/
+
+        #team-data-section {
+                margin-top: 15px;
+                padding: 10px;
+        }
+
+        #team-data-section h2 {
+                margin: 0 0 10px 0;
+        }
+
+        .team-data__table {
+                width: 100%;
+                border-collapse: collapse;
+                background-color: #fff;
+        }
+
+        .team-data__table th,
+        .team-data__table td {
+                padding: 8px 12px;
+                text-align: left;
+                border: 1px solid #ccc;
+        }
+
+        .team-data__table th {
+                background: #f0f0f0;
+                font-weight: bold;
+        }
+
+        .team-data__empty {
+                font-style: italic;
+                color: #555;
+        }
