@@ -67,7 +67,11 @@ class GeneralUIManager {
                 section.classList.add('hidden');
             }
 
-            section.style.display = 'none';
+            if (sectionId === 'div-menu') {
+                section.style.removeProperty('display');
+            } else {
+                section.style.display = 'none';
+            }
         });
     }
 }
