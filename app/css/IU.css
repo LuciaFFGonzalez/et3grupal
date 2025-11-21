@@ -1,0 +1,31 @@
+/* Estilos complementarios para la interfaz dinámica de ET3. */
+#team-data-section {
+    margin: 1rem 0;
+    padding: 1rem;
+    background-color: #f5f7fb;
+}
+
+#team-data-section h2 {
+    margin-top: 0;
+}
+
+.team-data__table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.team-data__table th,
+.team-data__table td {
+    border: 1px solid #ccc;
+    padding: 0.5rem;
+    text-align: left;
+}
+
+.team-data__table th {
+    background-color: #e7ebf3;
+}
+
+.team-data__empty {
+    color: #555;
+    font-style: italic;
+}

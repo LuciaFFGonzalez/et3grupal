@@ -23,56 +23,60 @@
         -->
         <!-- meta y configuracion global-->
 	<meta charset="UTF-8">
-	<!-- css -->
-	<link rel="stylesheet" type="text/css" href="./Base/css/IU.css" media="screen" />
-	<link rel="stylesheet" type="text/css" href="./Base/css/estilo-1.css" media="screen" />
-	<link rel="stylesheet" type="text/css" href="./Base/css/estilo-2.css" media="screen" />
-	<link rel="stylesheet" type="text/css" href="./Base/css/estilo-tests.css" media="screen" />
-	<!-- clases generales -->
-	 <!-- idioma -->
-	<script type="text/javascript" src="./locale/idioma.js"></script> 
-	<script type="text/javascript" src="./app/Textos_ES.js"></script>
-	<script type="text/javascript" src="./app/Textos_EN.js"></script>
-	<script type="text/javascript" src="./Core/Validations_Class.js"></script>
-	<script type="text/javascript" src="./Core/ExternalAccess_class.js"></script>
-	<!-- clases dom -->
-	<script type="text/javascript" src="./Core/Dom_table_Class.js"></script>
-	<script type="text/javascript" src="./Core/Dom_Class.js"></script>
-	<script type="text/javascript" src="./Base/EntidadAbstracta.js"></script>
-	<!-- clases entidades -->
-	<script type="text/javascript" src="./app/persona_Class.js"></script>
-	<!--<script type="text/javascript" src="./app/_Class.js"></script>
-	<script type="text/javascript" src="./app/_Class.js"></script>-->
-	<!-- clases de test -->
-	<script type="text/javascript" src="./Test/Unit/Unit_Test_Class.js"></script>
-	<script type="text/javascript" src="./Test/Data/Data_Test_Class.js"></script>
-	<!-- ficheros de testing-->
-	<script type="text/javascript" src="./app/ET2_persona_infotest.js"></script>
-	<!-- este es el script que carga las librerias ajax que usamos para acceder al back -->
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <!-- css -->
+        <link rel="stylesheet" type="text/css" href="./Base/css/IU.css" media="screen" />
+        <link rel="stylesheet" type="text/css" href="./Base/css/estilo-1.css" media="screen" />
+        <link rel="stylesheet" type="text/css" href="./Base/css/estilo-2.css" media="screen" />
+        <link rel="stylesheet" type="text/css" href="./Base/css/estilo-tests.css" media="screen" />
+        <link rel="stylesheet" type="text/css" href="./app/css/IU.css" media="screen" />
+        <!-- clases generales -->
+        <script type="text/javascript" src="./Core/App_Class.js"></script>
+        <!-- idioma -->
+        <script type="text/javascript" src="./locale/idioma.js"></script>
+        <script type="text/javascript" src="./app/Textos_ES.js"></script>
+        <script type="text/javascript" src="./app/Textos_EN.js"></script>
+        <script type="text/javascript" src="./Core/Validations_Class.js"></script>
+        <script type="text/javascript" src="./Core/ExternalAccess_class.js"></script>
+        <!-- clases dom -->
+        <script type="text/javascript" src="./Core/Dom_table_Class.js"></script>
+        <script type="text/javascript" src="./Core/Dom_Class.js"></script>
+        <script type="text/javascript" src="./Base/EntidadAbstracta.js"></script>
+        <!-- clases entidades -->
+        <script type="text/javascript" src="./app/persona_Class.js"></script>
+        <!--<script type="text/javascript" src="./app/_Class.js"></script>
+        <script type="text/javascript" src="./app/_Class.js"></script>-->
+        <!-- clases de test -->
+        <script type="text/javascript" src="./Test/Unit/Unit_Test_Class.js"></script>
+        <script type="text/javascript" src="./Test/Data/Data_Test_Class.js"></script>
+        <!-- ficheros de testing-->
+        <script type="text/javascript" src="./app/ET2_persona_infotest.js"></script>
+        <script type="text/javascript" src="./ET3_Datos_NombreEquipo.js"></script>
+        <!-- este es el script que carga las librerias ajax que usamos para acceder al back -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
 
 </head>
 
-<body>
+<body onload="initPage();">
 
 	<header id='header_page' class='bordeado'>
 		<span class='text_titulo_app'></span>
 		<img src="./iconos/Spain.png" onclick="setLang('ES');" />
         <img src="./iconos/United-Kingdom.png" onclick="setLang('EN');" />
 	</header>
-	<nav class='bordeado'><span class = 'text_titulo_menu' onclick="menu_work();"></span>
-	</nav>
-	<aside id='div-menu'>
-		<ol>
-		    <li class="opcionmenu"><span class = 'text_menu_persona' onclick="entidad = new persona();"></span></li>
-		    <li class="opcionmenu disabled"><span onclick="entidad = new entidad();">Gestionar otra entidad</span></li>
-	  	</ol>
-	</aside>
-	<section id="IU_manage_entity">
-		<section id="IU_manage_head">
-			<div id='title_page' class='bordeado'><span id = "text_title_page"></span>
-			</div>
+        <nav class='bordeado'><span class = 'text_titulo_menu' onclick="menu_work();"></span>
+        </nav>
+        <!-- El menú dinámico de entidades se integrará en este contenedor. -->
+        <aside id='div-menu'>
+                <ol>
+                    <li class="opcionmenu"><span class = 'text_menu_persona' onclick="entidad = new persona();"></span></li>
+                    <li class="opcionmenu disabled"><span onclick="entidad = new entidad();">Gestionar otra entidad</span></li>
+                </ol>
+        </aside>
+        <section id="IU_manage_entity">
+                <section id="IU_manage_head">
+                        <div id='title_page' class='bordeado'><span id = "text_title_page"></span>
+                        </div>
 			<div id="add_search_columns">
         		<img id="botonADD" src="./iconos/ADD.png" onclick="entidad.createForm_ADD();" />
         		<img id="botonSEARCH" src="./iconos/SEARCH.png" onclick="entidad.createForm_SEARCH();"/>
@@ -87,16 +91,17 @@
         	</div>
 		</section>
 
-		<section id="IU_manage_table">
+                <section id="IU_manage_table">
 
-		</section>
+                </section>
 
-	</section>
-	<section id="Div_IU_form" class='div_IU_form bordeado'>
-		<div class = "contenidoForm" id="contenidoForm">
-			<div class = "class_titulo_form">
-				<span id="class_contenido_titulo_form"></span>
-			</div>
+        </section>
+        <!-- La zona dinámica de formularios y tablas se generará automáticamente en esta sección. -->
+        <section id="Div_IU_form" class='div_IU_form bordeado'>
+                <div class = "contenidoForm" id="contenidoForm">
+                        <div class = "class_titulo_form">
+                                <span id="class_contenido_titulo_form"></span>
+                        </div>
 		<div id="contenedor_IU_form">
 			
 		</div>
@@ -117,9 +122,14 @@
 		</section>
 	</section>
 
-	<article class='bordeado'>Sección article</article>
+        <article class='bordeado'>Sección article</article>
 
-	<footer class='bordeado'>Pie de página</footer>
+        <section id="team-data-section" class='bordeado'>
+                <h2>Datos del equipo</h2>
+                <div id="team-data-content"></div>
+        </section>
+
+        <footer class='bordeado'>Pie de página</footer>
 
 	<!-- Overlay para acompañar el modal -->
 	<div id="modal_action_overlay"></div>
@@ -130,32 +140,24 @@
 		<!--<img src="./iconos/BACK.png" onclick="cerrarModalError();" />-->
 		<button onclick="entidad.dom.cerrarModalError()">X</button>
 	</div>
-	
-	<script type="text/javascript">
-		// document.getElementById('div-menu').style.display = 'none';
-		document.getElementById('div-menu').classList.add("hidden");
-		
-		document.getElementById('Div_IU_form').style.display = 'none';
-		document.getElementById('IU_Test_result_nofile').style.display = 'none';
-		document.getElementById('IU_Test_result_file').style.display = 'none';
-		
-		document.getElementById('Div_IU_Test').style.display = 'none';
-		document.getElementById('IU_manage_entity').style.display = 'none';
-		
-		/*	hide the text error box if is necessary	
-		document.getElementById('span_error_name').style.display = 'none';
-		*/
-		function menu_work(){
-			if (document.getElementById('div-menu').classList.contains("hidden")){
-				document.getElementById('div-menu').classList.remove("hidden");
-			}
-			else{
-				document.getElementById('div-menu').classList.add("hidden");
-			}
-		}
 
-		setLang();
-	</script>
+        <script type="text/javascript">
+                function menu_work(){
+                        if (document.getElementById('div-menu').classList.contains("hidden")){
+                                document.getElementById('div-menu').classList.remove("hidden");
+                        }
+                        else{
+                                document.getElementById('div-menu').classList.add("hidden");
+                        }
+                }
+
+                function initPage(){
+                        window.generalUIManager = new GeneralUIManager('ES');
+                        generalUIManager.hideInitialSections();
+                        generalUIManager.initDefaultLanguage();
+                        generalUIManager.renderTeamData('team-data-content');
+                }
+        </script>
 
 </body>
 
