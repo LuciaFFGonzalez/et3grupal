@@ -31,6 +31,8 @@
         <link rel="stylesheet" type="text/css" href="./app/css/IU.css" media="screen" />
         <!-- clases generales -->
         <script type="text/javascript" src="./Core/App_Class.js"></script>
+        <script type="text/javascript" src="./Core/AbstractEntity.js"></script>
+        <script type="text/javascript" src="./Core/GeneralUIManager.js"></script>
         <!-- idioma -->
         <script type="text/javascript" src="./locale/idioma.js"></script>
         <script type="text/javascript" src="./app/Textos_ES.js"></script>
@@ -69,24 +71,24 @@
         <!-- El menú dinámico de entidades se integrará en este contenedor. -->
         <aside id='div-menu'>
                 <ol>
-                    <li class="opcionmenu"><span class = 'text_menu_persona' onclick="entidad = new persona();"></span></li>
-                    <li class="opcionmenu disabled"><span onclick="entidad = new entidad();">Gestionar otra entidad</span></li>
+                    <li class="opcionmenu"><span class = 'text_menu_persona' onclick="uiManager.loadEntity('persona');"></span></li>
+                    <li class="opcionmenu disabled"><span onclick="uiManager.loadEntity('entidadGenerica');">Gestionar otra entidad</span></li>
                 </ol>
         </aside>
         <section id="IU_manage_entity">
                 <section id="IU_manage_head">
                         <div id='title_page' class='bordeado'><span id = "text_title_page"></span>
                         </div>
-			<div id="add_search_columns">
-        		<img id="botonADD" src="./iconos/ADD.png" onclick="entidad.createForm_ADD();" />
-        		<img id="botonSEARCH" src="./iconos/SEARCH.png" onclick="entidad.createForm_SEARCH();"/>
+                        <div id="add_search_columns">
+                        <img id="botonADD" src="./iconos/ADD.png" onclick="uiManager.refreshAddView();" />
+                        <img id="botonSEARCH" src="./iconos/SEARCH.png" onclick="uiManager.refreshSearchView();"/>
 								
 				<label id="label_seleccioncolumnas" class ="label_seleccioncolumnas"></label>
 				<select id="seleccioncolumnas" multiple>
 				</select>
 				
-				<img id="botonTEST_UNIT" src="./iconos/TEST_UNIT.png" onclick="test = new Unit_Test(entidad.nombreentidad)"/>
-				<img id="botonTEST_DATA" src="./iconos/TEST.png" onclick="test = new Data_Test(eval(entidad.nombreentidad))"/>
+                                <img id="botonTEST_UNIT" src="./iconos/TEST_UNIT.png" onclick="test = new Unit_Test(entidad?.nombreentidad || uiManager.currentEntity?.nombreentidad)"/>
+                                <img id="botonTEST_DATA" src="./iconos/TEST.png" onclick="test = new Data_Test(eval(entidad?.nombreentidad || uiManager.currentEntity?.nombreentidad))"/>
 
         	</div>
 		</section>
@@ -153,6 +155,7 @@
 
                 function initPage(){
                         window.generalUIManager = new GeneralUIManager('ES');
+                        window.uiManager = new UIManager({ validationManager: new Validations() });
                         generalUIManager.hideInitialSections();
                         generalUIManager.initDefaultLanguage();
                         generalUIManager.renderTeamData('team-data-content');
