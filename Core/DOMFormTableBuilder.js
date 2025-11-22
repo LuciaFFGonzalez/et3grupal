@@ -112,7 +112,7 @@ class DOMFormTableBuilder {
                 element = document.createElement('div');
                 element.classList.add('radio-group');
                 (html.options || []).forEach((optionValue, index) => {
-                    const radioId = `${name}_radio_${index}`;
+                    const radioId = index === 0 ? name : `${name}_radio_${index}`;
                     const radioWrapper = document.createElement('div');
                     radioWrapper.classList.add('radio-item');
 
@@ -137,7 +137,7 @@ class DOMFormTableBuilder {
                 element.classList.add('checkbox-group');
                 const checkboxOptions = html.multiple ? html.options || [] : [definition.label || name];
                 checkboxOptions.forEach((optionValue, index) => {
-                    const checkboxId = `${name}_checkbox_${index}`;
+                    const checkboxId = index === 0 ? name : `${name}_checkbox_${index}`;
                     const checkboxWrapper = document.createElement('div');
                     checkboxWrapper.classList.add('checkbox-item');
 
