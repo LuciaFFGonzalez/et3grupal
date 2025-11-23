@@ -14,6 +14,7 @@ class DOMFormTableBuilder {
             fieldWrapperClass,
             labelClass,
             inputClass,
+            languageManager = null,
         } = options;
 
         const normalizedFormClasses = Array.isArray(formClassList)
@@ -33,6 +34,7 @@ class DOMFormTableBuilder {
         this.defaultLabelClass = labelClass || 'form-label';
         this.defaultInputClass = inputClass || 'form-control';
         this.defaultTableClassList = ['table', 'bordeado', ...normalizedTableClasses];
+        this.languageManager = languageManager || (typeof window !== 'undefined' ? window?.generalUIManager?.languageManager : null);
     }
 
     /**
@@ -63,7 +65,8 @@ class DOMFormTableBuilder {
             const label = document.createElement('label');
             label.htmlFor = `${entityStructure.entity}_${attributeName}`;
             label.classList.add(this.defaultLabelClass);
-            label.textContent = definition.label || attributeName;
+            const labelKey = definition.label || `form.${entityStructure.entity}.${attributeName}.label`;
+            this.#setTranslatedText(label, labelKey, definition.label || attributeName);
             wrapper.appendChild(label);
 
             const fieldValue = tupleData[attributeName];
@@ -82,13 +85,16 @@ class DOMFormTableBuilder {
         const submitButton = document.createElement('button');
         submitButton.type = 'submit';
         submitButton.classList.add('boton', 'bordeado');
-        submitButton.textContent = action;
+        const submitKey = `action.${action.toLowerCase()}.button`;
+        this.#setTranslatedText(submitButton, submitKey, action);
         actionsContainer.appendChild(submitButton);
 
         const resetButton = document.createElement('button');
         resetButton.type = action === 'SEARCH' ? 'reset' : 'button';
         resetButton.classList.add('boton-secundario', 'bordeado');
-        resetButton.textContent = action === 'SEARCH' ? 'Limpiar' : 'Cancelar';
+        const resetKey = action === 'SEARCH' ? 'action.search.reset.button' : 'action.cancel.button';
+        const resetFallback = action === 'SEARCH' ? 'Limpiar' : 'Cancelar';
+        this.#setTranslatedText(resetButton, resetKey, resetFallback);
         actionsContainer.appendChild(resetButton);
 
         // Hook: attach form-level validation and submit handlers here.
@@ -126,7 +132,8 @@ class DOMFormTableBuilder {
                 (html.options || []).forEach((optionValue) => {
                     const optionElement = document.createElement('option');
                     optionElement.value = optionValue;
-                    optionElement.textContent = optionValue;
+                    const optionKey = `form.${entityName}.${name}.option.${optionValue}`;
+                    this.#setTranslatedText(optionElement, optionKey, optionValue);
                     if (this.#isSelectedValue(value, optionValue, element.multiple)) {
                         optionElement.selected = true;
                     }
@@ -153,7 +160,8 @@ class DOMFormTableBuilder {
 
                     const optionLabel = document.createElement('label');
                     optionLabel.htmlFor = radioId;
-                    optionLabel.textContent = optionValue;
+                    const optionKey = `form.${entityName}.${name}.option.${optionValue}`;
+                    this.#setTranslatedText(optionLabel, optionKey, optionValue);
 
                     radioWrapper.appendChild(inputElement);
                     radioWrapper.appendChild(optionLabel);
@@ -179,7 +187,10 @@ class DOMFormTableBuilder {
 
                     const optionLabel = document.createElement('label');
                     optionLabel.htmlFor = checkboxId;
-                    optionLabel.textContent = optionValue;
+                    const optionKey = html.multiple
+                        ? `form.${entityName}.${name}.option.${optionValue}`
+                        : definition.label || `form.${entityName}.${name}.label`;
+                    this.#setTranslatedText(optionLabel, optionKey, optionValue);
 
                     checkboxWrapper.appendChild(inputElement);
                     checkboxWrapper.appendChild(optionLabel);
@@ -234,12 +245,14 @@ class DOMFormTableBuilder {
         const visibleAttributes = Object.keys(entityStructure.attributes);
         visibleAttributes.forEach((attributeName) => {
             const th = document.createElement('th');
-            th.textContent = entityStructure.attributes[attributeName].label || attributeName;
+            const headerKey = entityStructure.attributes[attributeName].label
+                || `form.${entityStructure.entity}.${attributeName}.label`;
+            this.#setTranslatedText(th, headerKey, entityStructure.attributes[attributeName].label || attributeName);
             headerRow.appendChild(th);
         });
 
         const actionsHeader = document.createElement('th');
-        actionsHeader.textContent = 'Acciones';
+        this.#setTranslatedText(actionsHeader, 'table.actions.header', 'Acciones');
         headerRow.appendChild(actionsHeader);
 
         thead.appendChild(headerRow);
@@ -297,11 +310,23 @@ class DOMFormTableBuilder {
         const button = document.createElement('button');
         button.type = 'button';
         button.classList.add('boton-tabla', 'bordeado');
-        button.textContent = action;
+        const buttonKey = `action.${action.toLowerCase()}.table.button`;
+        this.#setTranslatedText(button, buttonKey, action);
         button.setAttribute('data-action', action);
         button.setAttribute('data-row-index', rowIndex);
         // Hook: external code should assign onclick/keyboard handlers here.
         return button;
+    }
+
+    #setTranslatedText(element, key, fallbackText = '', property = 'textContent') {
+        if (!element) return;
+        const translation = this.languageManager?.getText?.(key);
+        const resolvedText = translation && translation !== key ? translation : (fallbackText || key || '');
+        element[property] = resolvedText;
+
+        if (this.languageManager?.registerTranslationElement) {
+            this.languageManager.registerTranslationElement(element, key, fallbackText, property);
+        }
     }
 }
 

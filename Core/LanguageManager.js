@@ -4,6 +4,8 @@ class LanguageManager {
         this.translations = translations || this.buildDefaultTranslations();
         this.errorMessages = errorMessages || this.buildDefaultErrorMessages();
         this.currentLanguage = null;
+        this.changeListeners = [];
+        this.registeredElements = [];
     }
 
     buildDefaultTranslations() {
@@ -32,7 +34,44 @@ class LanguageManager {
             setLang(langToSet);
         }
         this.currentLanguage = langToSet;
+        this.refreshRegisteredTranslations();
+        this.notifyLanguageChange(langToSet);
         return this.currentLanguage;
+    }
+
+    registerTranslationElement(element, key, fallbackText = '', property = 'textContent') {
+        if (!element || !key) return;
+
+        const entry = { element, key, fallbackText, property };
+        this.registeredElements.push(entry);
+        this.applyTranslation(entry);
+    }
+
+    applyTranslation({ element, key, fallbackText, property }) {
+        if (!element) return;
+        const translated = this.getText(key);
+        element[property] = translated || fallbackText || key;
+    }
+
+    refreshRegisteredTranslations() {
+        this.registeredElements = this.registeredElements.filter(({ element }) => element && element.isConnected);
+        this.registeredElements.forEach((entry) => this.applyTranslation(entry));
+    }
+
+    onLanguageChange(callback) {
+        if (typeof callback === 'function') {
+            this.changeListeners.push(callback);
+        }
+    }
+
+    notifyLanguageChange(langCode) {
+        this.changeListeners.forEach((listener) => {
+            try {
+                listener(langCode);
+            } catch (error) {
+                console.warn('Error notifying language change', error);
+            }
+        });
     }
 
     getTranslations(langCode = null) {

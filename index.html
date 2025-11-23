@@ -65,8 +65,8 @@
 
 	<header id='header_page' class='bordeado'>
 		<span class='text_titulo_app'></span>
-		<img src="./iconos/Spain.png" onclick="setLang('ES');" />
-        <img src="./iconos/United-Kingdom.png" onclick="setLang('EN');" />
+                <img src="./iconos/Spain.png" onclick="changeLanguage('ES');" />
+        <img src="./iconos/United-Kingdom.png" onclick="changeLanguage('EN');" />
 	</header>
         <nav class='bordeado'><span class = 'text_titulo_menu' onclick="menu_work();"></span>
         </nav>
@@ -157,10 +157,18 @@
 
                 function initPage(){
                         window.generalUIManager = new GeneralUIManager('ES');
-                        window.uiManager = new UIManager({ validationManager: new Validations() });
+                        window.uiManager = new UIManager({ validationManager: new Validations(), languageManager: generalUIManager.languageManager });
                         generalUIManager.hideInitialSections();
                         generalUIManager.initDefaultLanguage();
                         generalUIManager.renderTeamData('team-data-content');
+                }
+
+                function changeLanguage(lang) {
+                        if (window.generalUIManager?.languageManager) {
+                                window.generalUIManager.languageManager.setLanguage(lang);
+                        } else {
+                                setLang(lang);
+                        }
                 }
         </script>
 
