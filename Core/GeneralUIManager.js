@@ -9,9 +9,9 @@ const GenericBaseEntity = typeof EntidadAbstracta === 'function' ? EntidadAbstra
     constructor(...args) {}
 };
 
-// Entidad genérica de fallback cuando no existe una clase concreta para la entidad seleccionada.
-// Hereda de EntidadAbstracta únicamente para reutilizar utilidades (dom, validations, etc.),
-// pero se inicializa en modo test para no generar formularios automáticos ni lanzar SEARCH.
+// Entidad “genérica” de fallback para cuando no exista una clase concreta para la entidad seleccionada.
+// Hereda de EntidadAbstracta únicamente para reutilizar utilidades comunes (dom, validations, etc.).
+// Se inicializa en modo test para que EntidadAbstracta no cree formularios automáticos ni ejecute SEARCH al instanciar.
 class GenericStructureEntity extends GenericBaseEntity {
     constructor(entityName, structure = {}) {
         super('test');
