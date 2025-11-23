@@ -17,6 +17,7 @@ class GeneralUIManager {
         if (!container) return;
 
         const dataset = typeof def_datos_NombreEquipo !== 'undefined' ? def_datos_NombreEquipo : [];
+        // La tabla se genera dinámicamente desde def_datos_NombreEquipo para cumplir el requisito ET3.
         if (!Array.isArray(dataset) || dataset.length === 0) {
             container.innerHTML = '<p class="team-data__empty">No hay datos del equipo disponibles.</p>';
             return;
