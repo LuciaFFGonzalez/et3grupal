@@ -5,7 +5,7 @@
         <!--
                 Guía rápida de arquitectura ET3 (recordatorio para el equipo):
                 - Base: mantiene el look&feel de la Semana 8 (HTML/CSS de referencia, estilos IU.css y ajustes mínimos comunes).
-                - Core: clases genéricas reutilizables (controlador principal de la app, abstracción de entidad, creación de formularios/tablas, validaciones y acceso externo).
+                - Core: clases genéricas reutilizables (controlador principal de la app, creación de formularios/tablas, validaciones y acceso externo).
                 - app: definiciones concretas de entidades y sus estructuras/idiomas de ejemplo para instanciar la IU dinámica.
                 - iconos: recursos gráficos usados por los botones de acción, idiomas y navegación.
                 - locale: utilidades de cambio de idioma y textos comunes multiidioma.
@@ -13,9 +13,9 @@
 
                 Ficheros clave para ET3 (se crearán/rellenarán en siguientes iteraciones):
                 - Core/App_Class.js: clase general instanciada onload que orquesta selección de entidad y generación dinámica de la IU.
-                - Base/EntidadAbstracta.js: clase base de entidades desde la que heredan las entidades específicas.
+                - Base/EntidadAbstracta.js: clase base oficial de entidades desde la que heredan las entidades específicas.
                 - Core/Dom_Class.js y Core/Dom_table_Class.js: construcción dinámica de formularios y tablas a partir de la estructura.
-                - Core/Validations_Class.js: validaciones genéricas por campo/acción (incluyendo fechas).
+                - Core/Validations_Class.js: único gestor de validaciones genéricas por campo/acción (incluyendo fechas).
                 - locale/idioma.js + app/Textos_*.js: gestión y recursos multiidioma en vivo.
                 - Base/css/IU.css: estilos comunes obligatorios para la IU ET3.
                 - API.html: documentación de la API de clases/métodos implementados.

@@ -1,3 +1,4 @@
+// Clase base oficial de entidades para ET3: todas las entidades concretas (por ejemplo, persona) deben heredar de EntidadAbstracta.
 class EntidadAbstracta{
 
 	constructor(esTest){

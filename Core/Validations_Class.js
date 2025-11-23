@@ -1,3 +1,4 @@
+// Clase central de validaciones para ET3: única fuente oficial a ampliar con reglas por acción (ADD, EDIT, SEARCH).
 class Validations{
 
 	constructor(){

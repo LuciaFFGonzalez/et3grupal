@@ -1,3 +1,4 @@
+// Aviso: Clase experimental/no usada en el flujo oficial de ET3; la solución actual utiliza Base/EntidadAbstracta.js como base de entidades.
 /**
  * Clase base abstracta para cualquier entidad gestionada por la aplicación.
  * Define el contrato mínimo que deben cumplir las entidades concretas.
