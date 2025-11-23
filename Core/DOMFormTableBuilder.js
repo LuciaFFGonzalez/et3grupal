@@ -2,14 +2,25 @@
  * DOMFormTableBuilder is responsible for dynamically generating forms and tables
  * based on a given entity structure. It focuses on rendering and leaves hooks
  * ready so validations and action handlers can be attached externally.
+ *
+ * Será utilizado por UIManager para pintar los formularios de ADD, EDIT, SEARCH y SHOWCURRENT.
+ * Por ahora únicamente dibuja la estructura; las validaciones y manejadores se enchufarán después.
  */
 class DOMFormTableBuilder {
-    constructor() {
-        this.defaultFormClassList = ['formulario', 'bordeado'];
-        this.defaultFieldWrapperClass = 'form-group';
-        this.defaultLabelClass = 'form-label';
-        this.defaultInputClass = 'form-control';
-        this.defaultTableClassList = ['table', 'bordeado'];
+    constructor(options = {}) {
+        const {
+            formClassList = [],
+            tableClassList = [],
+            fieldWrapperClass,
+            labelClass,
+            inputClass,
+        } = options;
+
+        this.defaultFormClassList = ['formulario', 'bordeado', ...formClassList];
+        this.defaultFieldWrapperClass = fieldWrapperClass || 'form-group';
+        this.defaultLabelClass = labelClass || 'form-label';
+        this.defaultInputClass = inputClass || 'form-control';
+        this.defaultTableClassList = ['table', 'bordeado', ...tableClassList];
     }
 
     /**

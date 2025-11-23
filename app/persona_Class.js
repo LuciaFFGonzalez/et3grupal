@@ -1,7 +1,7 @@
 class persona extends EntidadAbstracta{
 
-	constructor(esTest){
-		super();
+        constructor(esTest){
+                super(esTest);
 		
 
 		//definicion de atributos a mostrarn en la tabla de muestra de tuplas al entrar en la gestion de la entidad
@@ -10,7 +10,7 @@ class persona extends EntidadAbstracta{
 		this.mostrarespecial = ['fechaNacimiento_persona','foto_persona'];
 		
 		// definicion de los atributos del formulario (Necesario para test de unidad)
-		this.attributes = [  'dni',
+                this.attributes = [  'dni',
                                 'nombre_persona',
                                 'apellidos_persona',
                                 'fechaNacimiento_persona',
@@ -21,7 +21,9 @@ class persona extends EntidadAbstracta{
                                 'nuevo_foto_persona'
                             ];
 
-	}	
+                // TODO: añadir getStructure() en la fase de entidades de ejemplo (Fase 5) para exponer la estructura ET3.
+
+        }
 
 	/**
 	 * replace the content of section element with a particular entity menu

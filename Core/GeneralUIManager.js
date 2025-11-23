@@ -4,9 +4,17 @@
  * Se apoya en clases ya existentes (entidades concretas, builder de formularios/tablas y validaciones)
  * y expone puntos de integración claros para el back y para renderizadores dinámicos.
  */
-class GenericStructureEntity extends AbstractEntity {
+// Base seguro para evitar errores de carga cuando EntidadAbstracta aún no está disponible.
+const GenericBaseEntity = typeof EntidadAbstracta === 'function' ? EntidadAbstracta : class {
+    constructor(...args) {}
+};
+
+// Entidad genérica de fallback cuando no existe una clase concreta para la entidad seleccionada.
+// Hereda de EntidadAbstracta únicamente para reutilizar utilidades (dom, validations, etc.),
+// pero se inicializa en modo test para no generar formularios automáticos ni lanzar SEARCH.
+class GenericStructureEntity extends GenericBaseEntity {
     constructor(entityName, structure = {}) {
-        super();
+        super('test');
         this.entityName = entityName;
         this.structure = structure;
     }
@@ -22,7 +30,7 @@ class GenericStructureEntity extends AbstractEntity {
 
 class UIManager {
     constructor({ formRenderer = null, validationManager = null, structures = {} } = {}) {
-        this.formRenderer = formRenderer;
+        this.formRenderer = formRenderer || (typeof DOMFormTableBuilder === 'function' ? new DOMFormTableBuilder() : null);
         this.validationManager = validationManager || (typeof Validations === 'function' ? new Validations() : null);
         this.registeredStructures = structures;
         this.currentEntity = null;
@@ -109,11 +117,20 @@ class UIManager {
             entityFormMethod(payload);
         } else if (this.formRenderer && typeof this.formRenderer.renderAction === 'function') {
             this.formRenderer.renderAction(action, this.currentStructure, payload, this.currentEntity);
-        } else {
+        } else if (!this.renderWithBuilder(action, payload)) {
             this.renderPlaceholder(action);
         }
 
         this.attachValidationHooks(action);
+    }
+
+    renderWithBuilder(action, payload = null) {
+        if (!this.formRenderer || typeof this.formRenderer.createForm !== 'function') return false;
+        const container = document.getElementById('contenedor_IU_form');
+        if (!container) return false;
+
+        this.formRenderer.createForm(container, this.currentStructure, action, payload || {});
+        return true;
     }
 
     getEntityFormMethod(action) {
