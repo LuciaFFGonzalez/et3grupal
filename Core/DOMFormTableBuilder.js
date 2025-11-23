@@ -61,13 +61,13 @@ class DOMFormTableBuilder {
             wrapper.classList.add(this.defaultFieldWrapperClass);
 
             const label = document.createElement('label');
-            label.htmlFor = attributeName;
+            label.htmlFor = `${entityStructure.entity}_${attributeName}`;
             label.classList.add(this.defaultLabelClass);
             label.textContent = definition.label || attributeName;
             wrapper.appendChild(label);
 
             const fieldValue = tupleData[attributeName];
-            const fieldElement = this.#buildField(attributeName, definition, action, fieldValue);
+            const fieldElement = this.#buildField(attributeName, definition, action, fieldValue, entityStructure.entity);
 
             wrapper.appendChild(fieldElement);
 
@@ -106,7 +106,7 @@ class DOMFormTableBuilder {
      * @param {*} value - Prefill value for the field.
      * @returns {HTMLElement}
      */
-    #buildField(name, definition, action, value) {
+    #buildField(name, definition, action, value, entityName) {
         const { html = {} } = definition;
         const tag = (html.tag || 'input').toLowerCase();
         let element;
@@ -117,6 +117,8 @@ class DOMFormTableBuilder {
                 if (html.rows) element.rows = html.rows;
                 if (html.columns) element.cols = html.columns;
                 element.value = value || '';
+                element.id = `${entityName}_${name}`;
+                element.name = name;
                 break;
             case 'select':
                 element = document.createElement('select');
@@ -130,12 +132,14 @@ class DOMFormTableBuilder {
                     }
                     element.appendChild(optionElement);
                 });
+                element.id = `${entityName}_${name}`;
+                element.name = name;
                 break;
             case 'radio':
                 element = document.createElement('div');
                 element.classList.add('radio-group');
                 (html.options || []).forEach((optionValue, index) => {
-                    const radioId = index === 0 ? name : `${name}_radio_${index}`;
+                    const radioId = index === 0 ? `${entityName}_${name}` : `${entityName}_${name}_radio_${index}`;
                     const radioWrapper = document.createElement('div');
                     radioWrapper.classList.add('radio-item');
 
@@ -143,6 +147,7 @@ class DOMFormTableBuilder {
                     inputElement.type = 'radio';
                     inputElement.name = name;
                     inputElement.id = radioId;
+                    inputElement.setAttribute('data-attribute-name', name);
                     inputElement.value = optionValue;
                     inputElement.checked = value === optionValue;
 
@@ -160,7 +165,7 @@ class DOMFormTableBuilder {
                 element.classList.add('checkbox-group');
                 const checkboxOptions = html.multiple ? html.options || [] : [definition.label || name];
                 checkboxOptions.forEach((optionValue, index) => {
-                    const checkboxId = index === 0 ? name : `${name}_checkbox_${index}`;
+                    const checkboxId = index === 0 ? `${entityName}_${name}` : `${entityName}_${name}_checkbox_${index}`;
                     const checkboxWrapper = document.createElement('div');
                     checkboxWrapper.classList.add('checkbox-item');
 
@@ -168,6 +173,7 @@ class DOMFormTableBuilder {
                     inputElement.type = 'checkbox';
                     inputElement.name = name;
                     inputElement.id = checkboxId;
+                    inputElement.setAttribute('data-attribute-name', name);
                     inputElement.value = optionValue;
                     inputElement.checked = this.#isSelectedValue(value, optionValue, true);
 
@@ -187,13 +193,14 @@ class DOMFormTableBuilder {
                 if (html.component_visible_size) {
                     element.size = html.component_visible_size;
                 }
+                element.id = `${entityName}_${name}`;
+                element.name = name;
                 break;
         }
 
         if (tag !== 'radio' && tag !== 'checkbox') {
-            element.id = name;
-            element.name = name;
             element.classList.add(this.defaultInputClass);
+            element.setAttribute('data-attribute-name', name);
         }
 
         if (action === 'SHOWCURRENT') {

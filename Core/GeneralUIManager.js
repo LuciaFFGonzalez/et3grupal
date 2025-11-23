@@ -173,6 +173,17 @@ class UIManager {
         if (form.dataset.uiManagerValidationAttached === 'true') return;
         form.dataset.uiManagerValidationAttached = 'true';
 
+        const formElements = form.querySelectorAll('input[data-attribute-name], select[data-attribute-name], textarea[data-attribute-name]');
+        formElements.forEach((element) => {
+            const attributeName = element.dataset.attributeName;
+            const rulesForAction = this.currentStructure?.attributes?.[attributeName]?.rules?.validations?.[action];
+            if (!rulesForAction) return;
+
+            const handler = () => this.validateFieldOnEvent(element, attributeName, action);
+            element.addEventListener('blur', handler);
+            element.addEventListener('change', handler);
+        });
+
         form.addEventListener('submit', (event) => {
             const isValid = this.validateCurrentAction(form, action);
             if (!isValid) {
@@ -223,5 +234,77 @@ class UIManager {
         });
 
         return isValid;
+    }
+
+    validateFieldOnEvent(formElement, attributeName, action) {
+        const rulesForAction = this.currentStructure?.attributes?.[attributeName]?.rules?.validations?.[action];
+        if (!rulesForAction || !this.validationManager) return;
+
+        const value = this.extractFieldValue(formElement, attributeName);
+        const validationResult = this.validationManager.validateValueAgainstRules(value, rulesForAction);
+
+        this.showValidationResult(formElement, attributeName, validationResult.errorCodes);
+
+        if (rulesForAction.personalized) {
+            // TODO: invocar specialized_test_<atributo>(accion, valor) en la entidad concreta cuando esté disponible.
+        }
+    }
+
+    extractFieldValue(formElement, attributeName) {
+        const form = formElement.form || formElement.closest('form');
+        const relatedElements = form?.querySelectorAll(`[data-attribute-name="${attributeName}"]`) || [formElement];
+        const firstElement = relatedElements[0] || formElement;
+
+        if (firstElement.type === 'radio') {
+            const checked = Array.from(relatedElements).find((input) => input.checked);
+            return checked ? checked.value : '';
+        }
+
+        if (firstElement.type === 'checkbox') {
+            return Array.from(relatedElements)
+                .filter((input) => input.checked)
+                .map((input) => input.value);
+        }
+
+        if (firstElement.tagName === 'SELECT' && firstElement.multiple) {
+            return Array.from(firstElement.selectedOptions).map((option) => option.value);
+        }
+
+        if (firstElement.type === 'file') {
+            return firstElement.files?.[0] || null;
+        }
+
+        return firstElement.value;
+    }
+
+    showValidationResult(formElement, attributeName, errorCodes) {
+        const form = formElement.form || formElement.closest('form');
+        const relatedElements = form?.querySelectorAll(`[data-attribute-name="${attributeName}"]`) || [formElement];
+        const fieldWrapper = formElement.closest('.form-group') || formElement.parentElement;
+        let errorContainer = fieldWrapper?.querySelector('.field-error-messages');
+
+        if (!errorContainer) {
+            errorContainer = document.createElement('div');
+            errorContainer.classList.add('field-error-messages');
+            if (fieldWrapper) {
+                fieldWrapper.appendChild(errorContainer);
+            }
+        }
+
+        if (errorCodes.length > 0) {
+            relatedElements.forEach((element) => {
+                element.classList.add('input-error');
+                element.classList.remove('input-ok');
+            });
+            errorContainer.textContent = errorCodes.join(', ');
+        } else {
+            relatedElements.forEach((element) => {
+                element.classList.remove('input-error');
+                element.classList.add('input-ok');
+            });
+            if (errorContainer) {
+                errorContainer.textContent = '';
+            }
+        }
     }
 }
