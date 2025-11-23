@@ -16,11 +16,23 @@ class DOMFormTableBuilder {
             inputClass,
         } = options;
 
-        this.defaultFormClassList = ['formulario', 'bordeado', ...formClassList];
+        const normalizedFormClasses = Array.isArray(formClassList)
+            ? formClassList
+            : formClassList
+                ? [formClassList]
+                : [];
+        const normalizedTableClasses = Array.isArray(tableClassList)
+            ? tableClassList
+            : tableClassList
+                ? [tableClassList]
+                : [];
+
+        // Permite añadir clases CSS adicionales para personalizar los formularios y tablas.
+        this.defaultFormClassList = ['formulario', 'bordeado', ...normalizedFormClasses];
         this.defaultFieldWrapperClass = fieldWrapperClass || 'form-group';
         this.defaultLabelClass = labelClass || 'form-label';
         this.defaultInputClass = inputClass || 'form-control';
-        this.defaultTableClassList = ['table', 'bordeado', ...tableClassList];
+        this.defaultTableClassList = ['table', 'bordeado', ...normalizedTableClasses];
     }
 
     /**
