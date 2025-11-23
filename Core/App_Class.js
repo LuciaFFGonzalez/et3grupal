@@ -3,11 +3,16 @@
 class GeneralUIManager {
     constructor(defaultLanguage = 'ES') {
         this.defaultLanguage = defaultLanguage;
+        this.languageManager = typeof LanguageManager === 'function'
+            ? new LanguageManager({ defaultLanguage })
+            : null;
     }
 
     initDefaultLanguage(language) {
         const langToSet = language || this.defaultLanguage;
-        if (typeof setLang === 'function') {
+        if (this.languageManager && typeof this.languageManager.setLanguage === 'function') {
+            this.languageManager.setLanguage(langToSet);
+        } else if (typeof setLang === 'function') {
             setLang(langToSet);
         }
     }
