@@ -185,13 +185,53 @@ class UIManager {
         });
 
         form.addEventListener('submit', (event) => {
-            const isValid = this.validateCurrentAction(form, action);
-            if (!isValid) {
+            const validationResult = this.validateFormOnSubmit(form, action);
+            if (!validationResult.isValid) {
                 event.preventDefault();
+                this.showGlobalErrorSummary(validationResult.errors, action);
+                if (validationResult.firstInvalidElement) {
+                    validationResult.firstInvalidElement.focus();
+                }
                 return;
             }
-            // Punto de integración con el back: cuando haya conexión, disparar la llamada correspondiente.
+
+            event.preventDefault();
+
+            this.hideGlobalErrorSummary();
+
+            const formData = this.collectFormData(form);
+            console.log(`Formulario válido para acción ${action}`, formData);
+            this.showSuccessMessage(action);
+
+            // Reenvía el submit nativo para ejecutar la acción definida en el formulario
+            // (por ejemplo, javascript:entidad.ADD()). form.submit() no dispara de nuevo
+            // los manejadores de submit, evitando recursión.
+            form.submit();
         }, true);
+    }
+
+    validateFormOnSubmit(form, action) {
+        const formElements = Array.from(form.querySelectorAll('input[data-attribute-name], select[data-attribute-name], textarea[data-attribute-name]'));
+        const processedAttributes = new Set();
+        const errors = [];
+        let firstInvalidElement = null;
+
+        formElements.forEach((element) => {
+            const attributeName = element.dataset.attributeName;
+            if (!attributeName || processedAttributes.has(attributeName)) return;
+
+            processedAttributes.add(attributeName);
+            const validationResult = this.validateFieldOnEvent(element, attributeName, action) || { isValid: true, errorCodes: [] };
+
+            if (!validationResult.isValid) {
+                errors.push({ attributeName, errorCodes: validationResult.errorCodes });
+                if (!firstInvalidElement) {
+                    firstInvalidElement = element;
+                }
+            }
+        });
+
+        return { isValid: errors.length === 0, errors, firstInvalidElement };
     }
 
     validateCurrentAction(form, action) {
@@ -238,7 +278,7 @@ class UIManager {
 
     validateFieldOnEvent(formElement, attributeName, action) {
         const rulesForAction = this.currentStructure?.attributes?.[attributeName]?.rules?.validations?.[action];
-        if (!rulesForAction || !this.validationManager) return;
+        if (!rulesForAction || !this.validationManager) return { isValid: true, errorCodes: [] };
 
         const value = this.extractFieldValue(formElement, attributeName);
         const validationResult = this.validationManager.validateValueAgainstRules(value, rulesForAction);
@@ -248,6 +288,8 @@ class UIManager {
         if (rulesForAction.personalized) {
             // TODO: invocar specialized_test_<atributo>(accion, valor) en la entidad concreta cuando esté disponible.
         }
+
+        return validationResult;
     }
 
     extractFieldValue(formElement, attributeName) {
@@ -305,6 +347,72 @@ class UIManager {
             if (errorContainer) {
                 errorContainer.textContent = '';
             }
+        }
+    }
+
+    showGlobalErrorSummary(errors, action) {
+        const modal = document.getElementById('error_action_modal');
+        const overlay = document.getElementById('modal_action_overlay');
+        const messageContainer = document.getElementById('error_action_msg');
+
+        if (!modal || !overlay || !messageContainer) return;
+
+        messageContainer.innerHTML = '';
+
+        const title = document.createElement('p');
+        title.textContent = `Se han encontrado errores al validar la acción ${action}.`;
+        const list = document.createElement('ul');
+
+        errors.forEach(({ attributeName, errorCodes }) => {
+            const item = document.createElement('li');
+            item.textContent = `${attributeName}: ${errorCodes.join(', ')}`;
+            list.appendChild(item);
+        });
+
+        messageContainer.appendChild(title);
+        messageContainer.appendChild(list);
+
+        modal.style.display = 'block';
+        overlay.style.display = 'block';
+    }
+
+    hideGlobalErrorSummary() {
+        const modal = document.getElementById('error_action_modal');
+        const overlay = document.getElementById('modal_action_overlay');
+        const messageContainer = document.getElementById('error_action_msg');
+
+        if (messageContainer) {
+            messageContainer.innerHTML = '';
+        }
+
+        if (modal) modal.style.display = 'none';
+        if (overlay) overlay.style.display = 'none';
+    }
+
+    collectFormData(form) {
+        const data = {};
+        const elements = Array.from(form.querySelectorAll('input[data-attribute-name], select[data-attribute-name], textarea[data-attribute-name]'));
+        const processed = new Set();
+
+        elements.forEach((element) => {
+            const attributeName = element.dataset.attributeName;
+            if (!attributeName || processed.has(attributeName)) return;
+
+            processed.add(attributeName);
+            data[attributeName] = this.extractFieldValue(element, attributeName);
+        });
+
+        return data;
+    }
+
+    showSuccessMessage(action) {
+        const container = document.querySelector('#contenedor_IU_form .form-global-message') || document.createElement('div');
+        container.className = 'form-global-message form-global-message--success';
+        container.textContent = `Formulario válido para la acción ${action}.`;
+
+        const wrapper = document.getElementById('contenedor_IU_form');
+        if (wrapper && !wrapper.contains(container)) {
+            wrapper.prepend(container);
         }
     }
 }
