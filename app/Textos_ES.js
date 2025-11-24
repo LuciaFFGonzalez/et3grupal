@@ -16,7 +16,8 @@ var textos_ES = {
     */
 
     // textos menu
-	'text_menu_persona': 'Gestionar persona',
+        'text_menu_persona': 'Gestionar persona',
+        'text_menu_gestionar_persona': 'Gestionar persona',
 
     // textos entidad persona
 	'text_titulo_page_persona' : 'Gestión de Datos Personales',

@@ -83,18 +83,22 @@ class UIManager {
      */
     loadEntity(entityName) {
         if (!entityName) return;
-
-        this.currentEntity = this.instantiateEntity(entityName);
-        window.entidad = this.currentEntity; // compatibilidad con botones existentes
-        this.currentStructure = this.resolveStructure(entityName, this.currentEntity);
-
-        const manageSection = document.getElementById('IU_manage_entity');
-        if (manageSection) {
-            manageSection.classList.remove('hidden');
-            manageSection.style.display = 'block';
+        if (entityName === 'persona' && typeof persona === 'function') {
+            this.currentEntity = new persona();
+            this.currentStructure = this.currentEntity.getStructure?.() || window['estructura_persona'] || {};
+        } else {
+            this.currentEntity = this.instantiateEntity(entityName);
+            this.currentStructure = this.resolveStructure(entityName, this.currentEntity);
         }
 
+        window.entidad = this.currentEntity; // compatibilidad con botones existentes
+
         this.refreshSearchView();
+        const manageSection = document.getElementById('IU_manage_entity');
+        manageSection?.classList.remove('hidden');
+        if (manageSection) {
+            manageSection.style.display = 'block';
+        }
     }
 
     instantiateEntity(entityName) {

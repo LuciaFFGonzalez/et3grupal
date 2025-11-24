@@ -39,6 +39,10 @@ class LanguageManager {
         return this.currentLanguage;
     }
 
+    setLang(langCode) {
+        return this.setLanguage(langCode);
+    }
+
     registerTranslationElement(element, key, fallbackText = '', property = 'textContent') {
         if (!element || !key) return;
 

@@ -40,6 +40,7 @@
         <script type="text/javascript" src="./app/Textos_EN.js"></script>
         <script type="text/javascript" src="./app/Textos_Comunes.js"></script>
         <script type="text/javascript" src="./Core/Validations_Class.js"></script>
+        <script type="text/javascript" src="./Core/DOMFormTableBuilder.js"></script>
         <script type="text/javascript" src="./Core/ExternalAccess_class.js"></script>
         <!-- clases dom -->
         <script type="text/javascript" src="./Core/Dom_table_Class.js"></script>
@@ -147,6 +148,8 @@
 
         <script type="text/javascript">
                 function initPage(){
+                        window['persona'] = persona;
+                        window.nombreClaseEntidad = 'persona';
                         window.generalUIManager = new GeneralUIManager('ES');
                         window.uiManager = new UIManager({ validationManager: new Validations(), languageManager: generalUIManager.languageManager });
                         generalUIManager.hideInitialSections();
@@ -156,9 +159,9 @@
                 }
 
                 function changeLanguage(lang) {
-                        if (window.generalUIManager?.languageManager) {
-                                window.generalUIManager.languageManager.setLanguage(lang);
-                        } else {
+                        if (window.generalUIManager?.languageManager?.setLang) {
+                                window.generalUIManager.languageManager.setLang(lang);
+                        } else if (typeof setLang === 'function') {
                                 setLang(lang);
                         }
                 }
@@ -174,14 +177,19 @@
                                 const listItem = document.createElement('li');
                                 listItem.className = 'opcionmenu';
 
-                                if (entityName === 'persona') {
-                                        listItem.onclick = () => window.uiManager?.loadEntity('persona');
-                                }
-
                                 const trigger = document.createElement('span');
-                                trigger.className = `text_menu_${entityName}`;
-                                trigger.textContent = entityName;
+                                const labelKey = entityName === 'persona'
+                                        ? 'text_menu_gestionar_persona'
+                                        : `text_menu_${entityName}`;
+                                trigger.className = `${labelKey}`;
                                 trigger.onclick = () => window.uiManager?.loadEntity(entityName);
+
+                                const resolvedText = window.generalUIManager?.languageManager?.getText?.(labelKey) || entityName;
+                                trigger.textContent = resolvedText;
+
+                                if (window.generalUIManager?.languageManager?.registerTranslationElement) {
+                                        window.generalUIManager.languageManager.registerTranslationElement(trigger, labelKey, resolvedText);
+                                }
 
                                 listItem.appendChild(trigger);
                                 menuList.appendChild(listItem);

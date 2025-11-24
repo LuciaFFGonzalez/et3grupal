@@ -536,46 +536,179 @@ class persona extends EntidadAbstracta{
 		setLang();
 	}
 
-	createForm_SEARCH(){
+        createForm_SEARCH(){
+                const container = document.getElementById('contenedor_IU_form');
+                if (!container) return;
 
-		// poner titulo al formulario
+                container.innerHTML = '';
+                this.dom.show_element('Div_IU_form','block');
 
-		// limpiar y poner visible el formulario
-		document.getElementById('contenedor_IU_form').innerHTML = this.manual_form_creation();
-		this.dom.show_element('Div_IU_form','block');
-		this.dom.remove_class_value('class_contenido_titulo_form', 'text_contenido_titulo_form');
-		this.dom.assign_class_value('class_contenido_titulo_form', 'text_contenido_titulo_form_persona_SEARCH');
+                const titleSpan = document.getElementById('class_contenido_titulo_form');
+                if (titleSpan) {
+                        const titleKey = 'text_contenido_titulo_form_persona_SEARCH';
+                        titleSpan.className = `${titleKey} text_titulo_formulario`;
+                        const translatedTitle = window.generalUIManager?.languageManager?.getText?.(titleKey) || '';
+                        titleSpan.textContent = translatedTitle;
+                        window.generalUIManager?.languageManager?.registerTranslationElement?.(titleSpan, titleKey, translatedTitle);
+                }
 
-		// poner onsubmit
-		this.dom.assign_property_value('form_iu','onsubmit','return entidad.SEARCH_submit_'+this.nombreentidad);
+                const form = document.createElement('form');
+                form.id = 'form_iu';
+                form.method = 'POST';
+                form.enctype = 'multipart/form-data';
+                form.className = 'formulario';
+                form.setAttribute('onsubmit', `return entidad.SEARCH_submit_${this.nombreentidad}`);
+                form.setAttribute('action', 'javascript:entidad.SEARCH();');
 
-		// poner action
-		this.dom.assign_property_value('form_iu', 'action', 'javascript:entidad.SEARCH();');
-		
-		// poner no visible el campo foto_persona (solo se puede subir fichero)
-		this.dom.hide_element_form('nuevo_foto_persona');
-		this.dom.hide_element('link_foto_persona');
+                const structure = this.getStructure?.() || window['estructura_persona'] || {};
+                const attributes = structure.attributes || {};
 
-		// reemplazar enumerados por texto
-		// titulacion_persona que es un select
-		this.dom.replaceSelectXEmptyInput('titulacion_persona');
-		// menu_persona que es un checkbox
-		this.dom.replaceEnumNameXEmptyInput('menu_persona');
-		// genero_persona que es un radio
-		this.dom.replaceEnumNameXEmptyInput('genero_persona');
-		
-		// rellenar valores
-		// en SEARCH no hay valores que rellenar
+                Object.entries(attributes).forEach(([attributeName, definition]) => {
+                        const wrapper = document.createElement('div');
+                        wrapper.className = 'form-group';
 
-		// poner las validaciones
-		this.dom.colocarvalidaciones('form_iu','SEARCH');
+                        const label = document.createElement('label');
+                        label.htmlFor = attributeName;
+                        label.className = `label_${attributeName}`;
+                        label.textContent = definition.label || attributeName;
+                        wrapper.appendChild(label);
 
-		// colocar boton de submit
-		this.dom.colocarboton('SEARCH');
+                        const field = this.buildSearchField(attributeName, definition);
+                        wrapper.appendChild(field);
 
-		setLang();
-		
-	}
+                        const errorSpan = document.createElement('span');
+                        errorSpan.id = `span_error_${attributeName}`;
+                        const errorAnchor = document.createElement('a');
+                        errorAnchor.id = `error_${attributeName}`;
+                        errorSpan.appendChild(errorAnchor);
+                        wrapper.appendChild(errorSpan);
+
+                        form.appendChild(wrapper);
+                });
+
+                const errorContainer = document.createElement('div');
+                errorContainer.id = 'div_errores_formulario';
+                form.appendChild(errorContainer);
+
+                const submitWrapper = document.createElement('div');
+                submitWrapper.className = 'form-actions';
+                const submit = document.createElement('button');
+                submit.type = 'submit';
+                submit.className = 'boton bordeado';
+                submit.appendChild(document.createTextNode('SEARCH'));
+                submitWrapper.appendChild(submit);
+                form.appendChild(submitWrapper);
+
+                container.appendChild(form);
+
+                this.dom.colocarvalidaciones('form_iu','SEARCH');
+
+                const activeLang = window.generalUIManager?.languageManager?.getActiveLanguage?.() || 'ES';
+                if (window.generalUIManager?.languageManager?.setLang) {
+                        window.generalUIManager.languageManager.setLang(activeLang);
+                } else if (typeof setLang === 'function') {
+                        setLang(activeLang);
+                }
+        }
+
+        buildSearchField(attributeName, definition = {}) {
+                const html = definition.html || {};
+                const tag = (html.tag || 'input').toLowerCase();
+                const inputClass = 'form-control';
+
+                if (tag === 'textarea') {
+                        const textarea = document.createElement('textarea');
+                        textarea.id = attributeName;
+                        textarea.name = attributeName;
+                        textarea.rows = html.rows || 4;
+                        textarea.cols = html.columns || 40;
+                        textarea.className = inputClass;
+                        textarea.setAttribute('data-attribute-name', attributeName);
+                        return textarea;
+                }
+
+                if (tag === 'select') {
+                        const select = document.createElement('select');
+                        select.id = attributeName;
+                        select.name = attributeName;
+                        if (html.multiple) select.multiple = true;
+                        select.className = inputClass;
+                        select.setAttribute('data-attribute-name', attributeName);
+
+                        (html.options || []).forEach((optionValue) => {
+                                const option = document.createElement('option');
+                                option.value = optionValue;
+                                option.className = `label_${optionValue}`;
+                                option.textContent = optionValue;
+                                select.appendChild(option);
+                        });
+
+                        return select;
+                }
+
+                if (tag === 'radio') {
+                        const group = document.createElement('div');
+                        group.className = 'radio-group';
+                        (html.options || []).forEach((optionValue, index) => {
+                                const wrapper = document.createElement('div');
+                                wrapper.className = 'radio-item';
+                                const input = document.createElement('input');
+                                input.type = 'radio';
+                                input.name = attributeName;
+                                input.id = index === 0 ? attributeName : `${attributeName}_${index}`;
+                                input.setAttribute('data-attribute-name', attributeName);
+                                input.value = optionValue;
+
+                                const label = document.createElement('label');
+                                label.htmlFor = input.id;
+                                label.className = `label_${optionValue}`;
+                                label.textContent = optionValue;
+
+                                wrapper.appendChild(input);
+                                wrapper.appendChild(label);
+                                group.appendChild(wrapper);
+                        });
+                        return group;
+                }
+
+                if (tag === 'checkbox') {
+                        const group = document.createElement('div');
+                        group.className = 'checkbox-group';
+                        const options = html.multiple ? html.options || [] : [definition.label || attributeName];
+
+                        options.forEach((optionValue, index) => {
+                                const wrapper = document.createElement('div');
+                                wrapper.className = 'checkbox-item';
+                                const input = document.createElement('input');
+                                input.type = 'checkbox';
+                                input.name = attributeName;
+                                input.id = index === 0 ? attributeName : `${attributeName}_${index}`;
+                                input.value = optionValue;
+                                input.setAttribute('data-attribute-name', attributeName);
+
+                                const label = document.createElement('label');
+                                label.htmlFor = input.id;
+                                label.className = `label_${optionValue}`;
+                                label.textContent = optionValue;
+
+                                wrapper.appendChild(input);
+                                wrapper.appendChild(label);
+                                group.appendChild(wrapper);
+                        });
+                        return group;
+                }
+
+                const input = document.createElement('input');
+                input.type = html.type || 'text';
+                input.id = attributeName;
+                input.name = attributeName;
+                input.className = inputClass;
+                if (html.component_visible_size) {
+                        input.size = html.component_visible_size;
+                }
+                input.setAttribute('data-attribute-name', attributeName);
+                return input;
+        }
 
 	/**
 	 * modifica el formato de visualización de un atributo concreto y se devuelve el valor modificado

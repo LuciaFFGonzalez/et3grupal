@@ -16,7 +16,8 @@ var textos_EN = {
     */
 
     // textos menu
-	'text_menu_persona': 'Person Management',
+        'text_menu_persona': 'Person Management',
+        'text_menu_gestionar_persona': 'Manage person',
 
     // textos entidad persona
 	'text_titulo_page_persona' : 'Personal Data Management',

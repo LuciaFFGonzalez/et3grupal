@@ -330,4 +330,6 @@ class DOMFormTableBuilder {
     }
 }
 
-export default DOMFormTableBuilder;
+if (typeof window !== 'undefined') {
+    window.DOMFormTableBuilder = DOMFormTableBuilder;
+}
