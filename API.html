@@ -2,10 +2,155 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8" />
-    <title>API ET3 - Documentación pendiente</title>
-    <!-- TODO: completar la documentación de funciones y métodos de la entrega ET3. -->
+    <title>API ET3 - Documentación</title>
+    <link rel="stylesheet" type="text/css" href="./Base/css/IU.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="./Base/css/estilo-1.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="./Base/css/estilo-2.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="./Base/css/estilo-tests.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="./app/css/IU.css" media="screen" />
+    <style>
+        body {
+            padding: 1.5rem;
+        }
+        .api-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .api-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .api-header h1 {
+            margin: 0;
+        }
+        .api-home-link {
+            text-decoration: none;
+            padding: 0.5rem 0.75rem;
+            border-radius: 4px;
+        }
+        .api-section {
+            padding: 1rem;
+            background: #fff;
+        }
+        .api-section h2 {
+            margin-top: 0;
+        }
+        .api-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .api-table th,
+        .api-table td {
+            border: 1px solid #ccc;
+            padding: 0.5rem;
+            vertical-align: top;
+        }
+        .api-table th {
+            background-color: #f2f2f2;
+            text-align: left;
+        }
+        .api-empty {
+            padding: 1rem;
+        }
+    </style>
 </head>
 <body>
-    <!-- Aquí se listará la API (clases, métodos, parámetros y retornos) generada durante ET3. -->
+    <div class="api-wrapper">
+        <header class="api-header">
+            <h1>Documentación de la API</h1>
+            <a class="api-home-link bordeado" href="./index.html">← Volver a la aplicación</a>
+        </header>
+        <p>Listado generado dinámicamente a partir de las clases principales de la entrega ET3.</p>
+        <section id="api-docs-container"></section>
+    </div>
+
+    <script type="text/javascript" src="./app/apiDocData.js"></script>
+    <script type="text/javascript">
+        function buildParamsText(params) {
+            if (!Array.isArray(params) || params.length === 0) {
+                return 'Sin parámetros';
+            }
+            return params.map((param) => `${param.name} (${param.type})`).join(', ');
+        }
+
+        function renderApiDocs(data) {
+            const container = document.getElementById('api-docs-container');
+            if (!container) return;
+
+            if (!Array.isArray(data) || data.length === 0) {
+                container.innerHTML = '<p class="api-empty bordeado">No hay información de API disponible.</p>';
+                return;
+            }
+
+            const grouped = data.reduce((acc, item) => {
+                if (!acc[item.className]) {
+                    acc[item.className] = [];
+                }
+                acc[item.className].push(item);
+                return acc;
+            }, {});
+
+            container.innerHTML = '';
+
+            Object.entries(grouped).forEach(([className, methods]) => {
+                const section = document.createElement('section');
+                section.className = 'api-section bordeado';
+
+                const title = document.createElement('h2');
+                title.textContent = className;
+                section.appendChild(title);
+
+                const table = document.createElement('table');
+                table.className = 'api-table';
+
+                const thead = document.createElement('thead');
+                const headerRow = document.createElement('tr');
+                ['Método', 'Parámetros', 'Devuelve', 'Descripción'].forEach((label) => {
+                    const th = document.createElement('th');
+                    th.textContent = label;
+                    headerRow.appendChild(th);
+                });
+                thead.appendChild(headerRow);
+                table.appendChild(thead);
+
+                const tbody = document.createElement('tbody');
+                methods.forEach((method) => {
+                    const row = document.createElement('tr');
+
+                    const methodCell = document.createElement('td');
+                    methodCell.textContent = method.methodName;
+                    row.appendChild(methodCell);
+
+                    const paramsCell = document.createElement('td');
+                    paramsCell.textContent = buildParamsText(method.params);
+                    row.appendChild(paramsCell);
+
+                    const returnCell = document.createElement('td');
+                    returnCell.textContent = method.returns || '';
+                    row.appendChild(returnCell);
+
+                    const descriptionCell = document.createElement('td');
+                    descriptionCell.textContent = method.description || '';
+                    row.appendChild(descriptionCell);
+
+                    tbody.appendChild(row);
+                });
+                table.appendChild(tbody);
+
+                section.appendChild(table);
+                container.appendChild(section);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderApiDocs(window.apiDocData || []);
+        });
+    </script>
 </body>
 </html>
