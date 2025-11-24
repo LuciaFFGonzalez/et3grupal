@@ -8,8 +8,8 @@ class persona extends EntidadAbstracta{
 		this.columnasamostrar = ['dni','titulacion_persona', 'menu_persona','genero_persona'];
 		//definicion de atributos a cambiar su visualización
 		this.mostrarespecial = ['fechaNacimiento_persona','foto_persona'];
-		
-		// definicion de los atributos del formulario (Necesario para test de unidad)
+
+                // definicion de los atributos del formulario (Necesario para test de unidad)
                 this.attributes = [  'dni',
                                 'nombre_persona',
                                 'apellidos_persona',
@@ -23,6 +23,28 @@ class persona extends EntidadAbstracta{
 
                 // TODO: añadir getStructure() en la fase de entidades de ejemplo (Fase 5) para exponer la estructura ET3.
 
+        }
+
+        getStructure(){
+                return (typeof estructura_persona !== 'undefined') ? estructura_persona : null;
+        }
+
+        hasSpecializedTest(attributeName) {
+                const methodName = `specialized_test_${attributeName}`;
+                return typeof this[methodName] === 'function';
+        }
+
+        runSpecializedTest(attributeName, action, value) {
+                const methodName = `specialized_test_${attributeName}`;
+                if (typeof this[methodName] !== 'function') {
+                        return true;
+                }
+                return this[methodName](action, value);
+        }
+
+        specialized_test_dni(action, valor) {
+                const dniRegex = /^[0-9XYZ][0-9]{7}[A-Z]$/;
+                return dniRegex.test(valor || '');
         }
 
 	/**
