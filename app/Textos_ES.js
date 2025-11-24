@@ -41,11 +41,19 @@ var textos_ES = {
 	'label_nombre_persona': 'Nombre',
 	'label_apellidos_persona': 'Apellidos',
 	'label_fechaNacimiento_persona': 'Fecha Nacimiento',
-	'label_direccion_persona': 'Dirección',
-	'label_telefono_persona': 'Teléfono',
-	'label_email_persona': 'Correo Electrónico',
-	'label_foto_persona': 'Foto',
-	'label_nuevo_foto_persona': 'Nueva Foto',
+        'label_direccion_persona': 'Dirección',
+        'label_telefono_persona': 'Teléfono',
+        'label_email_persona': 'Correo Electrónico',
+        'label_foto_persona': 'Foto',
+        'label_nuevo_foto_persona': 'Nueva Foto',
+        'label_menu_persona': 'Menú',
+        'label_genero_persona': 'Género',
+        'label_Vegano': 'Vegano',
+        'label_Celiaco': 'Celíaco',
+        'label_AlergiaMarisco': 'Alergia Marisco',
+        'label_Masculino': 'Masculino',
+        'label_Femenino': 'Femenino',
+        'label_Otro': 'Otro',
 
 	// errores validaciones formulario
 	// ADD/EDIT
@@ -60,31 +68,44 @@ var textos_ES = {
 	'nombre_persona_format_KO':'Nombre no correcto. Solo se permiten alfabéticos',
 
 	// apellidos persona
-	'apellidos_persona_min_size_KO': 'Apellidos demasiado corto. Debe tener mas de 4 caracteres alfabéticos o espacios',
-	'apellidos_persona_max_size_KO': 'Apellidos demasiado largo. Debe tener menos de 20 caracteres alfabéticos o espacios',
-	'apellidos_persona_format_KO': 'Apellidos no correcto. Solo se permiten alfabéticos y espacios',
+        'apellidos_persona_min_size_KO': 'Apellidos demasiado corto. Debe tener mas de 4 caracteres alfabéticos o espacios',
+        'apellidos_persona_max_size_KO': 'Apellidos demasiado largo. Debe tener menos de 20 caracteres alfabéticos o espacios',
+        'apellidos_persona_format_KO': 'Apellidos no correcto. Solo se permiten alfabéticos y espacios',
 
-	//fecha nacimiento persona
-	'fechaNacimiento_persona_format_KO': 'Fecha no correcta. Debe tener el formato dd/mm/aaaa',
-	'fechaNacimiento_persona_valid_KO': 'Fecha no válida. La fecha debe existir',
+        //fecha nacimiento persona
+        'fechaNacimiento_persona_format_KO': 'Fecha no correcta. Debe tener el formato dd/mm/aaaa',
+        'fechaNacimiento_persona_valid_KO': 'Fecha no válida. La fecha debe existir',
 
-	// email persona
-	'email_persona_min_size_KO': '',
-	'email_persona_max_size_KO':'',
-	'email_persona_format_KO':'',
+        // dirección persona
+        'direccion_persona_min_size_KO': 'Dirección demasiado corta. Debe tener al menos 5 caracteres',
+        'direccion_persona_max_size_KO': 'Dirección demasiado larga. Debe tener menos de 200 caracteres',
 
-	// nuevo foto persona	
-	'nuevo_foto_persona_not_exist_file_KO':'El fichero no existe. Debe subir una foto',
-	'nuevo_foto_persona_max_size_file_KO':'',
-	'nuevo_foto_persona_type_file_KO':'',
-	'nuevo_foto_persona_format_name_file_KO':'',
-	'nuevo_foto_persona_min_size_KO':'',
-	'nuevo_foto_persona_max_size_KO':'',
+        // telefono persona
+        'telefono_persona_min_size_KO': 'Teléfono demasiado corto. Debe tener 9 dígitos',
+        'telefono_persona_max_size_KO': 'Teléfono demasiado largo. Debe tener 9 dígitos',
+        'telefono_persona_format_KO': 'Teléfono incorrecto. Solo se permiten 9 dígitos',
 
-	//SEARCH
-	// foto persona
-	'foto_persona_max_size_KO':'',
-	'foto_persona_format_KO':'',
+        // email persona
+        'email_persona_min_size_KO': 'Correo demasiado corto. Debe incluir usuario y dominio',
+        'email_persona_max_size_KO':'Correo demasiado largo. Máximo 60 caracteres',
+        'email_persona_format_KO':'Correo electrónico incorrecto. Debe tener el formato usuario@dominio',
+
+        // nuevo foto persona
+        'nuevo_foto_persona_not_exist_file_KO':'El fichero no existe. Debe subir una foto',
+        'nuevo_foto_persona_max_size_file_KO':'El fichero supera el tamaño máximo permitido (2MB)',
+        'nuevo_foto_persona_type_file_KO':'Tipo de fichero no permitido. Solo JPG o PNG',
+        'nuevo_foto_persona_format_name_file_KO':'Nombre de fichero incorrecto. Usa letras, números y extensión .jpg o .png',
+        'nuevo_foto_persona_min_size_KO':'El nombre del fichero es demasiado corto',
+        'nuevo_foto_persona_max_size_KO':'El nombre del fichero es demasiado largo',
+
+        //SEARCH
+        // foto persona
+        'foto_persona_max_size_KO':'La ruta de la foto es demasiado larga',
+        'foto_persona_format_KO':'Formato de foto no válido',
+
+        // enumerados
+        'menu_persona_valor_KO':'Debe seleccionar un valor válido de menú',
+        'genero_persona_valor_KO':'Debe seleccionar un género válido',
 	
 
 	//errores acciones

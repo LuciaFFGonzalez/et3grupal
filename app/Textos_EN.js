@@ -41,11 +41,19 @@ var textos_EN = {
 	'label_nombre_persona': 'First Name',
 	'label_apellidos_persona': 'Last Name',
 	'label_fechaNacimiento_persona': 'Date of Birth',
-	'label_direccion_persona': 'Address',
-	'label_telefono_persona': 'Phone',
-	'label_email_persona': 'Email',
-	'label_foto_persona': 'Photo',
-	'label_nuevo_foto_persona': 'New Photo',
+        'label_direccion_persona': 'Address',
+        'label_telefono_persona': 'Phone',
+        'label_email_persona': 'Email',
+        'label_foto_persona': 'Photo',
+        'label_nuevo_foto_persona': 'New Photo',
+        'label_menu_persona': 'Menu',
+        'label_genero_persona': 'Gender',
+        'label_Vegano': 'Vegan',
+        'label_Celiaco': 'Celiac',
+        'label_AlergiaMarisco': 'Seafood allergy',
+        'label_Masculino': 'Male',
+        'label_Femenino': 'Female',
+        'label_Otro': 'Other',
 
 	// errores validaciones formulario
 	// ADD/EDIT
@@ -68,24 +76,37 @@ var textos_EN = {
     'fechaNacimiento_persona_format_KO': 'Date is incorrect. Must be in dd/mm/yyyy format',
     'fechaNacimiento_persona_valid_KO': 'Date is invalid. The date must exist',
 
+        // dirección persona
+        'direccion_persona_min_size_KO': 'Address is too short. It must have at least 5 characters',
+        'direccion_persona_max_size_KO': 'Address is too long. It must have fewer than 200 characters',
 
-	// email persona
-	'email_persona_min_size_KO': '',
-	'email_persona_max_size_KO':'',
-	'email_persona_format_KO':'',
+        // telefono persona
+        'telefono_persona_min_size_KO': 'Phone number is too short. It must have 9 digits',
+        'telefono_persona_max_size_KO': 'Phone number is too long. It must have 9 digits',
+        'telefono_persona_format_KO': 'Incorrect phone number. Only 9 digits are allowed',
 
-	// nuevo foto persona	
-	'nuevo_foto_persona_not_exist_file_KO':'The file does not exist. A photo in jpg format must be uploaded.',
-	'nuevo_foto_persona_max_size_file_KO':'',
-	'nuevo_foto_persona_type_file_KO':'',
-	'nuevo_foto_persona_format_name_file_KO':'',
-	'nuevo_foto_persona_min_size_KO':'',
-	'nuevo_foto_persona_max_size_KO':'',
 
-	//SEARCH
-	// foto persona
-	'foto_persona_max_size_KO':'',
-	'foto_persona_format_KO':'',
+        // email persona
+        'email_persona_min_size_KO': 'Email is too short. Please include user and domain',
+        'email_persona_max_size_KO':'Email is too long. Maximum 60 characters',
+        'email_persona_format_KO':'Incorrect email. It must follow the user@domain format',
+
+        // nuevo foto persona
+        'nuevo_foto_persona_not_exist_file_KO':'The file does not exist. A photo in jpg format must be uploaded.',
+        'nuevo_foto_persona_max_size_file_KO':'The file exceeds the allowed size (2MB)',
+        'nuevo_foto_persona_type_file_KO':'File type not allowed. Only JPG or PNG',
+        'nuevo_foto_persona_format_name_file_KO':'Invalid filename. Use letters, numbers and .jpg or .png extension',
+        'nuevo_foto_persona_min_size_KO':'Filename is too short',
+        'nuevo_foto_persona_max_size_KO':'Filename is too long',
+
+        //SEARCH
+        // foto persona
+        'foto_persona_max_size_KO':'Photo path is too long',
+        'foto_persona_format_KO':'Invalid photo format',
+
+        // enumerados
+        'menu_persona_valor_KO':'You must choose a valid menu option',
+        'genero_persona_valor_KO':'You must choose a valid gender option',
 	
 
 	//errores acciones
