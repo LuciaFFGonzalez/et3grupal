@@ -146,15 +146,6 @@
 	</div>
 
         <script type="text/javascript">
-                function menu_work(){
-                        if (document.getElementById('div-menu').classList.contains("hidden")){
-                                document.getElementById('div-menu').classList.remove("hidden");
-                        }
-                        else{
-                                document.getElementById('div-menu').classList.add("hidden");
-                        }
-                }
-
                 function initPage(){
                         window.generalUIManager = new GeneralUIManager('ES');
                         window.uiManager = new UIManager({ validationManager: new Validations(), languageManager: generalUIManager.languageManager });

@@ -81,3 +81,17 @@ class GeneralUIManager {
         });
     }
 }
+
+// Controla la visibilidad del menú lateral.
+// Si el menú tiene la clase "hidden" se elimina; en caso contrario, se añade,
+// logrando el efecto de mostrar u ocultar el bloque.
+function menu_work() {
+    const menuElement = document.getElementById('div-menu');
+    if (!menuElement || !menuElement.classList) return;
+
+    if (menuElement.classList.contains('hidden')) {
+        menuElement.classList.remove('hidden');
+    } else {
+        menuElement.classList.add('hidden');
+    }
+}
