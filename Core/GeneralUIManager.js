@@ -88,6 +88,12 @@ class UIManager {
         window.entidad = this.currentEntity; // compatibilidad con botones existentes
         this.currentStructure = this.resolveStructure(entityName, this.currentEntity);
 
+        const manageSection = document.getElementById('IU_manage_entity');
+        if (manageSection) {
+            manageSection.classList.remove('hidden');
+            manageSection.style.display = 'block';
+        }
+
         this.refreshSearchView();
     }
 
