@@ -50,7 +50,8 @@ class LanguageManager {
     applyTranslation({ element, key, fallbackText, property }) {
         if (!element) return;
         const translated = this.getText(key);
-        element[property] = translated || fallbackText || key;
+        const resolvedText = translated === key && fallbackText ? fallbackText : translated;
+        element[property] = resolvedText || fallbackText || key;
     }
 
     refreshRegisteredTranslations() {
