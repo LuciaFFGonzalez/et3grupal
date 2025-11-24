@@ -9,6 +9,39 @@ const GenericBaseEntity = typeof EntidadAbstracta === 'function' ? EntidadAbstra
     constructor(...args) {}
 };
 
+// Registro en memoria para las estructuras generales conocidas.
+class StructureRegistry {
+    constructor(initialStructures = {}) {
+        this.structures = { ...initialStructures };
+    }
+
+    getKey(entityName) {
+        return `estructura_${entityName?.toLowerCase?.()}`;
+    }
+
+    register(structure) {
+        if (!structure?.entity) return;
+        const key = this.getKey(structure.entity);
+        this.structures[key] = structure;
+    }
+
+    get(entityName) {
+        const key = this.getKey(entityName);
+        return this.structures[key] || null;
+    }
+
+    hydrateFromWindow(entityName) {
+        if (typeof window === 'undefined') return null;
+        const key = this.getKey(entityName);
+        const structureFromWindow = window[key];
+        if (structureFromWindow) {
+            this.register(structureFromWindow);
+            return structureFromWindow;
+        }
+        return null;
+    }
+}
+
 // Entidad “genérica” de fallback para cuando no exista una clase concreta para la entidad seleccionada.
 // Hereda de EntidadAbstracta únicamente para reutilizar utilidades comunes (dom, validations, etc.).
 // Se inicializa en modo test para que EntidadAbstracta no cree formularios automáticos ni ejecute SEARCH al instanciar.
@@ -29,7 +62,7 @@ class GenericStructureEntity extends GenericBaseEntity {
 }
 
 class UIManager {
-    constructor({ formRenderer = null, validationManager = null, structures = {}, languageManager = null } = {}) {
+    constructor({ formRenderer = null, validationManager = null, structures = {}, languageManager = null, structureRegistry = null } = {}) {
         this.languageManager = languageManager || (typeof window !== 'undefined' ? window?.generalUIManager?.languageManager : null);
         this.formRenderer = formRenderer || (typeof DOMFormTableBuilder === 'function'
             ? new DOMFormTableBuilder({ languageManager: this.languageManager })
@@ -38,7 +71,7 @@ class UIManager {
         if (this.formRenderer && !this.formRenderer.languageManager && this.languageManager) {
             this.formRenderer.languageManager = this.languageManager;
         }
-        this.registeredStructures = structures;
+        this.structureRegistry = structureRegistry || new StructureRegistry(structures);
         this.currentEntity = null;
         this.currentStructure = null;
         this.currentAction = null;
@@ -75,30 +108,26 @@ class UIManager {
         return new GenericStructureEntity(entityName, fallbackStructure);
     }
 
-resolveStructure(entityName, entityInstance) {
-let structureFromEntity = null;
-if (entityInstance && typeof entityInstance.getStructure === 'function') {
-try {
-structureFromEntity = entityInstance.getStructure();
-} catch (error) {
-console.warn('Error obteniendo la estructura de la entidad concreta:', error);
-}
-}
+    resolveStructure(entityName, entityInstance) {
+        let structureFromEntity = null;
+        if (entityInstance && typeof entityInstance.getStructure === 'function') {
+            try {
+                structureFromEntity = entityInstance.getStructure();
+            } catch (error) {
+                console.warn('Error obteniendo la estructura de la entidad concreta:', error);
+            }
+        }
 
-if (structureFromEntity && structureFromEntity.entity === entityName) {
-const key = `estructura_${entityName?.toLowerCase?.()}`;
-this.registeredStructures[key] = structureFromEntity;
-return structureFromEntity;
-}
+        if (structureFromEntity && structureFromEntity.entity === entityName) {
+            this.structureRegistry.register(structureFromEntity);
+            return structureFromEntity;
+        }
 
-return this.getGeneralStructure(entityName) || { entity: entityName, attributes: {} };
-}
+        return this.getGeneralStructure(entityName) || { entity: entityName, attributes: {} };
+    }
 
     getGeneralStructure(entityName) {
-        const key = `estructura_${entityName?.toLowerCase?.()}`;
-        if (this.registeredStructures[key]) return this.registeredStructures[key];
-        if (typeof window !== 'undefined' && window[key]) return window[key];
-        return null;
+        return this.structureRegistry.get(entityName) || this.structureRegistry.hydrateFromWindow(entityName);
     }
 
     capitalize(value) {

@@ -45,6 +45,7 @@
         <script type="text/javascript" src="./Core/Dom_table_Class.js"></script>
         <script type="text/javascript" src="./Core/Dom_Class.js"></script>
         <script type="text/javascript" src="./Base/EntidadAbstracta.js"></script>
+        <script type="text/javascript" src="./app/entitiesConfig.js"></script>
         <script type="text/javascript" src="./app/estructura_persona.js"></script>
         <!-- clases entidades -->
         <script type="text/javascript" src="./app/persona_Class.js"></script>
@@ -73,10 +74,7 @@
         </nav>
         <!-- El menú dinámico de entidades se integrará en este contenedor. -->
         <aside id='div-menu'>
-                <ol>
-                    <li class="opcionmenu"><span class = 'text_menu_persona' onclick="uiManager.loadEntity('persona');"></span></li>
-                    <li class="opcionmenu disabled"><span onclick="uiManager.loadEntity('entidadGenerica');">Gestionar otra entidad</span></li>
-                </ol>
+                <ol id="entity-menu-list"></ol>
         </aside>
         <section id="IU_manage_entity">
                 <section id="IU_manage_head">
@@ -162,6 +160,7 @@
                         generalUIManager.hideInitialSections();
                         generalUIManager.initDefaultLanguage();
                         generalUIManager.renderTeamData('team-data-content');
+                        renderEntityMenu();
                 }
 
                 function changeLanguage(lang) {
@@ -170,6 +169,27 @@
                         } else {
                                 setLang(lang);
                         }
+                }
+
+                function renderEntityMenu() {
+                        const menuList = document.getElementById('entity-menu-list');
+                        if (!menuList) return;
+
+                        menuList.innerHTML = '';
+                        const entities = Array.isArray(window.entitiesConfig) ? window.entitiesConfig : [];
+
+                        entities.forEach((entityName) => {
+                                const listItem = document.createElement('li');
+                                listItem.className = 'opcionmenu';
+
+                                const trigger = document.createElement('span');
+                                trigger.className = `text_menu_${entityName}`;
+                                trigger.textContent = entityName;
+                                trigger.onclick = () => window.uiManager?.loadEntity(entityName);
+
+                                listItem.appendChild(trigger);
+                                menuList.appendChild(listItem);
+                        });
                 }
         </script>
 
