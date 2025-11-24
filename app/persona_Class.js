@@ -21,6 +21,81 @@ class persona extends EntidadAbstracta{
                                 'nuevo_foto_persona'
                             ];
 
+                this.personasDummy = [
+                        {
+                                dni: '00000000A',
+                                nombre_persona: 'Ada',
+                                apellidos_persona: 'Lovelace',
+                                fechaNacimiento_persona: '1815-12-10',
+                                direccion_persona: '10 Downing St',
+                                telefono_persona: '600000001',
+                                email_persona: 'ada@example.com',
+                                titulacion_persona: 'MIA',
+                                menu_persona: ['Vegano'],
+                                genero_persona: 'Femenino',
+                                foto_persona: 'ada.png',
+                                nuevo_foto_persona: '',
+                        },
+                        {
+                                dni: '12345678Z',
+                                nombre_persona: 'Grace',
+                                apellidos_persona: 'Hopper',
+                                fechaNacimiento_persona: '1906-12-09',
+                                direccion_persona: 'Naval Base',
+                                telefono_persona: '600000002',
+                                email_persona: 'grace@example.com',
+                                titulacion_persona: 'GREI',
+                                menu_persona: ['Celiaco'],
+                                genero_persona: 'Femenino',
+                                foto_persona: 'grace.jpg',
+                                nuevo_foto_persona: '',
+                        },
+                        {
+                                dni: '87654321X',
+                                nombre_persona: 'Alan',
+                                apellidos_persona: 'Turing',
+                                fechaNacimiento_persona: '1912-06-23',
+                                direccion_persona: 'Bletchley Park',
+                                telefono_persona: '600000003',
+                                email_persona: 'alan@example.com',
+                                titulacion_persona: 'MEI',
+                                menu_persona: ['Vegano', 'Celiaco'],
+                                genero_persona: 'Masculino',
+                                foto_persona: 'alan.jpg',
+                                nuevo_foto_persona: '',
+                        },
+                        {
+                                dni: '24681357Y',
+                                nombre_persona: 'Linus',
+                                apellidos_persona: 'Torvalds',
+                                fechaNacimiento_persona: '1969-12-28',
+                                direccion_persona: 'Helsinki',
+                                telefono_persona: '600000004',
+                                email_persona: 'linus@example.com',
+                                titulacion_persona: 'GRIA',
+                                menu_persona: ['AlergiaMarisco'],
+                                genero_persona: 'Masculino',
+                                foto_persona: 'linus.png',
+                                nuevo_foto_persona: '',
+                        },
+                        {
+                                dni: '13572468W',
+                                nombre_persona: 'Katherine',
+                                apellidos_persona: 'Johnson',
+                                fechaNacimiento_persona: '1918-08-26',
+                                direccion_persona: 'Virginia',
+                                telefono_persona: '600000005',
+                                email_persona: 'katherine@example.com',
+                                titulacion_persona: 'PCEO',
+                                menu_persona: ['Vegano'],
+                                genero_persona: 'Femenino',
+                                foto_persona: 'katherine.jpg',
+                                nuevo_foto_persona: '',
+                        }
+                ];
+
+                this.lastSearchResults = [];
+
                 // TODO: añadir getStructure() en la fase de entidades de ejemplo (Fase 5) para exponer la estructura ET3.
 
         }
@@ -552,8 +627,18 @@ class persona extends EntidadAbstracta{
                 const container = document.getElementById('contenedor_IU_form');
                 if (!container) return;
 
-                container.innerHTML = '';
-                this.dom.show_element('Div_IU_form','block');
+                const formBuilder = window.uiManager?.formRenderer
+                        || new DOMFormTableBuilder({ languageManager: window.generalUIManager?.languageManager });
+
+                const structure = this.getStructure?.() || window['estructura_persona'] || {};
+
+                formBuilder.createForm(container, structure, 'SEARCH', {});
+
+                const form = container.querySelector('form');
+                if (form) {
+                        form.id = 'form_iu';
+                        form.classList.add('formulario');
+                }
 
                 const titleSpan = document.getElementById('class_contenido_titulo_form');
                 if (titleSpan) {
@@ -564,57 +649,10 @@ class persona extends EntidadAbstracta{
                         window.generalUIManager?.languageManager?.registerTranslationElement?.(titleSpan, titleKey, translatedTitle);
                 }
 
-                const form = document.createElement('form');
-                form.id = 'form_iu';
-                form.method = 'POST';
-                form.enctype = 'multipart/form-data';
-                form.className = 'formulario';
-                form.setAttribute('onsubmit', `return entidad.SEARCH_submit_${this.nombreentidad}`);
-                form.setAttribute('action', 'javascript:entidad.SEARCH();');
-
-                const structure = this.getStructure?.() || window['estructura_persona'] || {};
-                const attributes = structure.attributes || {};
-
-                Object.entries(attributes).forEach(([attributeName, definition]) => {
-                        const wrapper = document.createElement('div');
-                        wrapper.className = 'form-group';
-
-                        const label = document.createElement('label');
-                        label.htmlFor = attributeName;
-                        label.className = `label_${attributeName}`;
-                        label.textContent = definition.label || attributeName;
-                        wrapper.appendChild(label);
-
-                        const field = this.buildSearchField(attributeName, definition);
-                        wrapper.appendChild(field);
-
-                        const errorSpan = document.createElement('span');
-                        errorSpan.id = `span_error_${attributeName}`;
-                        const errorAnchor = document.createElement('a');
-                        errorAnchor.id = `error_${attributeName}`;
-                        errorSpan.appendChild(errorAnchor);
-                        wrapper.appendChild(errorSpan);
-
-                        form.appendChild(wrapper);
-                });
-
-                const errorContainer = document.createElement('div');
-                errorContainer.id = 'div_errores_formulario';
-                form.appendChild(errorContainer);
-
-                const submitWrapper = document.createElement('div');
-                submitWrapper.className = 'form-actions';
-                const submit = document.createElement('button');
-                submit.type = 'submit';
-                submit.id = 'submit_button';
-                submit.className = 'boton bordeado';
-                submit.appendChild(document.createTextNode('SEARCH'));
-                submitWrapper.appendChild(submit);
-                form.appendChild(submitWrapper);
-
-                container.appendChild(form);
-
-                this.dom.colocarvalidaciones('form_iu','SEARCH');
+                const wrapper = document.getElementById('Div_IU_form');
+                if (wrapper) {
+                        wrapper.style.display = 'block';
+                }
 
                 const activeLang = window.generalUIManager?.languageManager?.getActiveLanguage?.() || 'ES';
                 if (window.generalUIManager?.languageManager?.setLang) {
@@ -721,6 +759,100 @@ class persona extends EntidadAbstracta{
                 }
                 input.setAttribute('data-attribute-name', attributeName);
                 return input;
+        }
+
+        SEARCH(formValues = null){
+                const filters = formValues || this.collectSearchFormValues();
+                const results = this.filterDummyData(filters);
+                this.lastSearchResults = results;
+                this.renderSearchResults(results);
+                return results;
+        }
+
+        collectSearchFormValues(){
+                const form = document.querySelector('#contenedor_IU_form form');
+                const structure = this.getStructure?.() || window['estructura_persona'] || {};
+                const attributes = structure.attributes || {};
+                const data = {};
+
+                Object.keys(attributes).forEach((attributeName) => {
+                        const elements = form?.querySelectorAll(`[data-attribute-name="${attributeName}"]`);
+                        if (!elements || elements.length === 0) {
+                                return;
+                        }
+
+                        const first = elements[0];
+                        if (first.type === 'radio') {
+                                const checked = Array.from(elements).find((el) => el.checked);
+                                data[attributeName] = checked ? checked.value : '';
+                                return;
+                        }
+
+                        if (first.type === 'checkbox') {
+                                data[attributeName] = Array.from(elements)
+                                        .filter((el) => el.checked)
+                                        .map((el) => el.value);
+                                return;
+                        }
+
+                        if (first.tagName === 'SELECT' && first.multiple) {
+                                data[attributeName] = Array.from(first.selectedOptions).map((opt) => opt.value);
+                                return;
+                        }
+
+                        data[attributeName] = first.value ?? '';
+                });
+
+                return data;
+        }
+
+        filterDummyData(filters = {}){
+                return this.personasDummy.filter((registro) => {
+                        return Object.entries(filters).every(([key, filterValue]) => this.matchesFilter(registro[key], filterValue));
+                });
+        }
+
+        matchesFilter(recordValue, filterValue){
+                if (filterValue === undefined || filterValue === null) return true;
+                if (Array.isArray(filterValue)){
+                        if (filterValue.length === 0) return true;
+                        if (Array.isArray(recordValue)){
+                                return filterValue.every((value) => recordValue.includes(value));
+                        }
+                        return false;
+                }
+                if (filterValue === '') return true;
+                const normalizedFilter = String(filterValue).toLowerCase();
+                if (Array.isArray(recordValue)){
+                        return recordValue.some((value) => String(value).toLowerCase().includes(normalizedFilter));
+                }
+                if (recordValue === undefined || recordValue === null) return false;
+                return String(recordValue).toLowerCase().includes(normalizedFilter);
+        }
+
+        renderSearchResults(results = []){
+                const container = document.getElementById('IU_manage_table');
+                if (!container) return;
+
+                const builder = window.uiManager?.formRenderer
+                        || new DOMFormTableBuilder({ languageManager: window.generalUIManager?.languageManager });
+                const structure = this.getStructure?.() || window['estructura_persona'] || {};
+                const visibleAttributes = Object.keys(structure.attributes || {}).filter((attr) => attr !== 'nuevo_foto_persona');
+
+                builder.createTable(container, structure, results, {
+                        visibleAttributes,
+                        actions: ['SHOWCURRENT', 'EDIT'],
+                        onActionClick: (action, rowIndex, rowData) => {
+                                if (action === 'SHOWCURRENT') {
+                                        window.uiManager?.refreshShowCurrentView?.(rowData);
+                                }
+                                if (action === 'EDIT') {
+                                        window.uiManager?.refreshEditView?.(rowData);
+                                }
+                        },
+                });
+
+                container.style.display = 'block';
         }
 
 	/**

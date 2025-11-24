@@ -253,6 +253,12 @@ class UIManager {
 
             const formData = this.collectFormData(form);
             console.log(`Formulario válido para acción ${action}`, formData);
+
+            if (action === 'SEARCH' && typeof this.currentEntity?.SEARCH === 'function') {
+                this.currentEntity.SEARCH(formData);
+                return;
+            }
+
             this.showSuccessMessage(action);
 
             // Reenvía el submit nativo para ejecutar la acción definida en el formulario

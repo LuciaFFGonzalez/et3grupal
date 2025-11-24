@@ -229,12 +229,18 @@ class DOMFormTableBuilder {
      * @param {Object} entityStructure - Structure describing the entity fields.
      * @param {Array<Object>} dataArray - Data to populate the table rows.
      */
-    createTable(containerElement, entityStructure, dataArray) {
+    createTable(containerElement, entityStructure, dataArray, options = {}) {
         if (!containerElement || !entityStructure || !entityStructure.attributes) {
             return;
         }
 
+        const { visibleAttributes, actions = ['SHOWCURRENT', 'EDIT'], onActionClick = null } = options;
+
         containerElement.innerHTML = '';
+
+        const resolvedAttributes = Array.isArray(visibleAttributes) && visibleAttributes.length > 0
+            ? visibleAttributes
+            : Object.keys(entityStructure.attributes);
 
         const table = document.createElement('table');
         this.defaultTableClassList.forEach((cls) => table.classList.add(cls));
@@ -242,8 +248,7 @@ class DOMFormTableBuilder {
         const thead = document.createElement('thead');
         const headerRow = document.createElement('tr');
 
-        const visibleAttributes = Object.keys(entityStructure.attributes);
-        visibleAttributes.forEach((attributeName) => {
+        resolvedAttributes.forEach((attributeName) => {
             const th = document.createElement('th');
             const headerKey = entityStructure.attributes[attributeName].label
                 || `form.${entityStructure.entity}.${attributeName}.label`;
@@ -251,29 +256,47 @@ class DOMFormTableBuilder {
             headerRow.appendChild(th);
         });
 
-        const actionsHeader = document.createElement('th');
-        this.#setTranslatedText(actionsHeader, 'table.actions.header', 'Acciones');
-        headerRow.appendChild(actionsHeader);
+        if (actions && actions.length > 0) {
+            const actionsHeader = document.createElement('th');
+            this.#setTranslatedText(actionsHeader, 'table.actions.header', 'Acciones');
+            headerRow.appendChild(actionsHeader);
+        }
 
         thead.appendChild(headerRow);
         table.appendChild(thead);
 
         const tbody = document.createElement('tbody');
+
+        if (!dataArray || dataArray.length === 0) {
+            const emptyRow = document.createElement('tr');
+            const emptyCell = document.createElement('td');
+            emptyCell.colSpan = resolvedAttributes.length + (actions?.length ? 1 : 0);
+            this.#setTranslatedText(emptyCell, 'table.empty.message', 'No hay resultados');
+            emptyRow.appendChild(emptyCell);
+            tbody.appendChild(emptyRow);
+        }
+
         (dataArray || []).forEach((rowData, rowIndex) => {
             const row = document.createElement('tr');
-            visibleAttributes.forEach((attributeName) => {
+            resolvedAttributes.forEach((attributeName) => {
                 const td = document.createElement('td');
                 const cellValue = rowData[attributeName];
                 td.textContent = cellValue !== undefined ? cellValue : '';
                 row.appendChild(td);
             });
 
-            const actionCell = document.createElement('td');
-            actionCell.classList.add('action-cell');
-            actionCell.appendChild(this.#buildActionButton('EDIT', rowIndex));
-            actionCell.appendChild(this.#buildActionButton('SHOWCURRENT', rowIndex));
-            actionCell.appendChild(this.#buildActionButton('DELETE', rowIndex));
-            row.appendChild(actionCell);
+            if (actions && actions.length > 0) {
+                const actionCell = document.createElement('td');
+                actionCell.classList.add('action-cell');
+                actions.forEach((action) => {
+                    const button = this.#buildActionButton(action, rowIndex);
+                    if (typeof onActionClick === 'function') {
+                        button.addEventListener('click', () => onActionClick(action, rowIndex, rowData));
+                    }
+                    actionCell.appendChild(button);
+                });
+                row.appendChild(actionCell);
+            }
 
             // Hook: attach row-level handlers for edit, detail, delete using data attributes.
 
