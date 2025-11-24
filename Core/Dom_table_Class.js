@@ -209,11 +209,12 @@ class dom_table {
 				}
 				
 
-				if (document.getElementById(campos[i].id).type == 'submit'){}
-				else{
-					document.getElementById(campos[i].id).setAttribute (evento,'entidad.'+accion+'_'+campos[i].id+'_validation'+'();');
-				}
-			}
+                                if (document.getElementById(campos[i].id).type == 'submit'){}
+                                else{
+                                        const validationTarget = campos[i].getAttribute('data-attribute-name') || campos[i].id;
+                                        document.getElementById(campos[i].id).setAttribute (evento,'entidad.'+accion+'_'+validationTarget+'_validation'+'();');
+                                }
+                        }
 					        
 		}
 	}

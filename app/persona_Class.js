@@ -594,6 +594,7 @@ class persona extends EntidadAbstracta{
                 submitWrapper.className = 'form-actions';
                 const submit = document.createElement('button');
                 submit.type = 'submit';
+                submit.id = 'submit_button';
                 submit.className = 'boton bordeado';
                 submit.appendChild(document.createTextNode('SEARCH'));
                 submitWrapper.appendChild(submit);
