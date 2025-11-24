@@ -75,17 +75,24 @@ class UIManager {
         return new GenericStructureEntity(entityName, fallbackStructure);
     }
 
-    resolveStructure(entityName, entityInstance) {
-        if (entityInstance && typeof entityInstance.getStructure === 'function') {
-            try {
-                return entityInstance.getStructure();
-            } catch (error) {
-                console.warn('Error obteniendo la estructura de la entidad concreta:', error);
-            }
-        }
+resolveStructure(entityName, entityInstance) {
+let structureFromEntity = null;
+if (entityInstance && typeof entityInstance.getStructure === 'function') {
+try {
+structureFromEntity = entityInstance.getStructure();
+} catch (error) {
+console.warn('Error obteniendo la estructura de la entidad concreta:', error);
+}
+}
 
-        return this.getGeneralStructure(entityName) || { entity: entityName, attributes: {} };
-    }
+if (structureFromEntity && structureFromEntity.entity === entityName) {
+const key = `estructura_${entityName?.toLowerCase?.()}`;
+this.registeredStructures[key] = structureFromEntity;
+return structureFromEntity;
+}
+
+return this.getGeneralStructure(entityName) || { entity: entityName, attributes: {} };
+}
 
     getGeneralStructure(entityName) {
         const key = `estructura_${entityName?.toLowerCase?.()}`;
