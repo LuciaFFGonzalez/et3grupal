@@ -29,3 +29,205 @@
     color: #555;
     font-style: italic;
 }
+
+/* Estilos para formularios de entidades */
+.entity-form-container {
+    margin: 1.5rem auto;
+    padding: 1.25rem;
+    max-width: 1100px;
+    background: #f7f7f7;
+    border: 1px solid #d0d3da;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.entity-form-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #dcdfe6;
+    color: #2c3e50;
+}
+
+.entity-form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 0.85rem 1rem;
+    align-items: start;
+}
+
+.entity-form-field label {
+    display: block;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 0.3rem;
+}
+
+.entity-form-field input,
+.entity-form-field select,
+.entity-form-field textarea {
+    width: 100%;
+    padding: 0.55rem 0.65rem;
+    border: 1px solid #c7ccd6;
+    border-radius: 4px;
+    font-size: 0.95rem;
+    background-color: #fff;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.entity-form-field input:focus,
+.entity-form-field select:focus,
+.entity-form-field textarea:focus {
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.15);
+    outline: none;
+}
+
+.entity-form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: flex-end;
+    margin-top: 1.25rem;
+}
+
+.entity-form-actions .btn-secondary {
+    background: #f0f2f5;
+    color: #2c3e50;
+    border: 1px solid #d0d3da;
+}
+
+/* Estilos para mensajes de error */
+.input-error,
+.input-error input,
+.input-error select,
+.input-error textarea {
+    border-color: #c0392b !important;
+    background-color: #fff5f5;
+}
+
+.input-ok,
+.input-ok input,
+.input-ok select,
+.input-ok textarea {
+    border-color: #27ae60;
+    background-color: #f4fff8;
+}
+
+.field-error-message {
+    margin-top: 0.25rem;
+    color: #c0392b;
+    font-size: 0.9rem;
+}
+
+.form-error-summary {
+    margin: 0.5rem 0 1rem 0;
+    padding: 0.75rem;
+    border: 1px solid #c0392b;
+    background: #fff1f0;
+    border-radius: 6px;
+    color: #7a1c13;
+}
+
+/* Estilos para tablas de resultados */
+.entity-results-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    background: #fff;
+    border: 1px solid #d0d3da;
+}
+
+.entity-results-table th,
+.entity-results-table td {
+    padding: 0.65rem 0.75rem;
+    border: 1px solid #e1e4ea;
+    text-align: left;
+    color: #2c3e50;
+}
+
+.entity-results-table th {
+    background: #eef2f7;
+    font-weight: 700;
+}
+
+.entity-results-table tbody tr:nth-child(2n) {
+    background: #fafbfc;
+}
+
+.entity-results-table tbody tr:hover {
+    background: #f1f5fb;
+}
+
+/* Estilos para datos de alumnos en index.html */
+.team-data__header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #2c3e50;
+}
+
+.team-data__wrapper {
+    border: 1px solid #d0d3da;
+    border-radius: 8px;
+    background: #ffffff;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+    padding: 0.75rem;
+}
+
+/* Estilos para API.html */
+.api-docs {
+    max-width: 1100px;
+    margin: 1.5rem auto;
+    padding: 1.5rem;
+    border: 1px solid #d0d3da;
+    border-radius: 8px;
+    background: #f9fafa;
+}
+
+.api-docs h1,
+.api-docs h2,
+.api-docs h3 {
+    color: #2c3e50;
+    margin-top: 0;
+}
+
+.api-docs__section {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 6px;
+    background: #ffffff;
+    border: 1px solid #e1e4ea;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.api-docs__table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0.5rem;
+}
+
+.api-docs__table th,
+.api-docs__table td {
+    border: 1px solid #e1e4ea;
+    padding: 0.5rem 0.65rem;
+    text-align: left;
+    font-size: 0.95rem;
+}
+
+.api-docs__table th {
+    background: #eef2f7;
+    font-weight: 700;
+}
+
+.api-docs__badge {
+    display: inline-block;
+    padding: 0.2rem 0.5rem;
+    border-radius: 999px;
+    background: #e7ebf3;
+    color: #2c3e50;
+    font-size: 0.85rem;
+}
