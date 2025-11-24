@@ -29,9 +29,15 @@ class GenericStructureEntity extends GenericBaseEntity {
 }
 
 class UIManager {
-    constructor({ formRenderer = null, validationManager = null, structures = {} } = {}) {
-        this.formRenderer = formRenderer || (typeof DOMFormTableBuilder === 'function' ? new DOMFormTableBuilder() : null);
+    constructor({ formRenderer = null, validationManager = null, structures = {}, languageManager = null } = {}) {
+        this.languageManager = languageManager || (typeof window !== 'undefined' ? window?.generalUIManager?.languageManager : null);
+        this.formRenderer = formRenderer || (typeof DOMFormTableBuilder === 'function'
+            ? new DOMFormTableBuilder({ languageManager: this.languageManager })
+            : null);
         this.validationManager = validationManager || (typeof Validations === 'function' ? new Validations() : null);
+        if (this.formRenderer && !this.formRenderer.languageManager && this.languageManager) {
+            this.formRenderer.languageManager = this.languageManager;
+        }
         this.registeredStructures = structures;
         this.currentEntity = null;
         this.currentStructure = null;
@@ -333,12 +339,14 @@ class UIManager {
             }
         }
 
-        if (errorCodes.length > 0) {
+        const errorMessages = this.formatErrorCodes(errorCodes);
+
+        if (errorMessages.length > 0) {
             relatedElements.forEach((element) => {
                 element.classList.add('input-error');
                 element.classList.remove('input-ok');
             });
-            errorContainer.textContent = errorCodes.join(', ');
+            errorContainer.textContent = errorMessages.join(', ');
         } else {
             relatedElements.forEach((element) => {
                 element.classList.remove('input-error');
@@ -360,12 +368,15 @@ class UIManager {
         messageContainer.innerHTML = '';
 
         const title = document.createElement('p');
-        title.textContent = `Se han encontrado errores al validar la acción ${action}.`;
+        const titleKey = 'validation.action.error.title';
+        const titleText = this.getText(titleKey, `Se han encontrado errores al validar la acción ${action}.`);
+        title.textContent = titleText.replace('{action}', action);
         const list = document.createElement('ul');
 
         errors.forEach(({ attributeName, errorCodes }) => {
             const item = document.createElement('li');
-            item.textContent = `${attributeName}: ${errorCodes.join(', ')}`;
+            const errorMessages = this.formatErrorCodes(errorCodes);
+            item.textContent = `${attributeName}: ${errorMessages.join(', ')}`;
             list.appendChild(item);
         });
 
@@ -408,11 +419,24 @@ class UIManager {
     showSuccessMessage(action) {
         const container = document.querySelector('#contenedor_IU_form .form-global-message') || document.createElement('div');
         container.className = 'form-global-message form-global-message--success';
-        container.textContent = `Formulario válido para la acción ${action}.`;
+        const successKey = 'validation.form.success';
+        const successText = this.getText(successKey, `Formulario válido para la acción ${action}.`);
+        container.textContent = successText.replace('{action}', action);
 
         const wrapper = document.getElementById('contenedor_IU_form');
         if (wrapper && !wrapper.contains(container)) {
             wrapper.prepend(container);
         }
+    }
+
+    formatErrorCodes(errorCodes = []) {
+        return (errorCodes || []).map((code) => this.languageManager?.getErrorMessage?.(code) || code);
+    }
+
+    getText(key, fallbackText = '') {
+        if (!key) return fallbackText;
+        const translated = this.languageManager?.getText?.(key);
+        if (translated && translated !== key) return translated;
+        return fallbackText || key;
     }
 }
