@@ -1,10 +1,14 @@
 var textos_EN = {
 
 	// textos titulos generales
-	'text_titulo_app': 'IU ET2 Interface',
-	'text_titulo_menu': 'Menu Options',
-	'text_titulo_pie': 'Footer',
+        'text_titulo_app': 'IU ET2 Interface',
+        'text_titulo_menu': 'Menu Options',
+        'text_titulo_pie': 'Footer',
     'label_seleccioncolumnas': 'Select columns ',
+    'text_article_section': 'Main section',
+    'text_team_data_title': 'Team data',
+    'text_api_link_label': 'API',
+    'text_api_link_title': 'API documentation',
     
     // textos de test
     /*'res_estructura_tests':'Tabla verificacion estructura de test',
@@ -124,6 +128,47 @@ var textos_EN = {
         'text_contenido_titulo_form_producto_DELETE': 'Product DELETE Form',
         'text_contenido_titulo_form_producto_SHOWCURRENT': 'Product SHOWCURRENT Form',
         'text_contenido_titulo_form_producto_SEARCH': 'Product SEARCH Form',
+
+    // textos interfaz genérica
+    'ui.placeholder.action': 'Render {action} for {entity}.',
+    'ui.placeholder.info': 'Dynamic structures will be used when available.',
+    'ui.placeholder.entity.unnamed': 'unnamed entity',
+    'validation.action.error.title': 'Errors found while validating action {action}.',
+    'validation.form.success': 'Form is valid for action {action}.',
+
+    // tabla de resultados
+    'table.actions.header': 'Actions',
+    'table.empty.message': 'No results',
+    'action.add.button': 'Add',
+    'action.edit.button': 'Edit',
+    'action.delete.button': 'Delete',
+    'action.search.button': 'Search',
+    'action.showcurrent.button': 'Show detail',
+    'action.showcurrent.table.button': 'View',
+    'action.edit.table.button': 'Edit',
+    'action.search.reset.button': 'Clear',
+    'action.cancel.button': 'Cancel',
+
+    // tabla datos equipo
+    'team.data.empty': 'No team data available.',
+    'team.data.header.entrega': 'Delivery',
+    'team.data.header.nombre': 'Name',
+    'team.data.header.dni': 'ID',
+    'team.data.header.horas': 'Hours',
+
+    // textos enumerados
+    'form.persona.menu_persona.option.Vegano': 'Vegan',
+    'form.persona.menu_persona.option.Celiaco': 'Celiac',
+    'form.persona.menu_persona.option.AlergiaMarisco': 'Seafood allergy',
+    'form.persona.genero_persona.option.Masculino': 'Male',
+    'form.persona.genero_persona.option.Femenino': 'Female',
+    'form.persona.genero_persona.option.Otro': 'Other',
+
+    // errores personalizados faltantes
+    'dni_validate_KO': 'The ID number is not valid.',
+    'nie_validate_KO': 'The foreign ID is not valid.',
+    'dni_nie_format_KO': 'Identification format is incorrect.',
+    'nie_format_KO': 'Incorrect foreign ID format. It must start with X, Y or Z followed by 7 digits and one letter.',
 
         // atributos producto
         'codigo_producto': 'Code',

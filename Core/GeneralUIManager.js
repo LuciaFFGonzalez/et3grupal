@@ -197,18 +197,33 @@ class UIManager {
         const container = document.getElementById('contenedor_IU_form');
         if (!container) return;
 
+        const entityName = this.currentStructure?.entity
+            || this.getText('ui.placeholder.entity.unnamed', 'entidad sin nombre');
+
         const title = document.getElementById('class_contenido_titulo_form');
         if (title) {
-            title.textContent = `${this.currentAction || action} - ${this.currentStructure?.entity || ''}`;
+            title.textContent = `${this.currentAction || action} - ${entityName}`;
         }
 
         container.innerHTML = '';
         const info = document.createElement('div');
         info.className = 'ui-manager__placeholder';
-        info.innerHTML = `
-            <p>Render ${action} para <strong>${this.currentStructure?.entity || 'entidad sin nombre'}</strong>.</p>
-            <p>Se usarán las estructuras dinámicas cuando estén disponibles.</p>
-        `;
+
+        const actionParagraph = document.createElement('p');
+        const actionTextTemplate = this.getText('ui.placeholder.action', 'Render {action} para {entity}.');
+        actionParagraph.textContent = actionTextTemplate
+            .replace('{action}', action)
+            .replace('{entity}', entityName);
+
+        const infoParagraph = document.createElement('p');
+        const infoText = this.getText(
+            'ui.placeholder.info',
+            'Se usarán las estructuras dinámicas cuando estén disponibles.'
+        );
+        infoParagraph.textContent = infoText;
+
+        info.appendChild(actionParagraph);
+        info.appendChild(infoParagraph);
         container.appendChild(info);
 
         const form = document.createElement('form');
@@ -468,14 +483,15 @@ class UIManager {
 
         const title = document.createElement('p');
         const titleKey = 'validation.action.error.title';
-        const titleText = this.getText(titleKey, `Se han encontrado errores al validar la acción ${action}.`);
-        title.textContent = titleText.replace('{action}', action);
+        const titleTemplate = this.getText(titleKey, `Se han encontrado errores al validar la acción {action}.`);
+        title.textContent = titleTemplate.replace('{action}', action);
         const list = document.createElement('ul');
 
         errors.forEach(({ attributeName, errorCodes }) => {
             const item = document.createElement('li');
             const errorMessages = this.formatErrorCodes(errorCodes);
-            item.textContent = `${attributeName}: ${errorMessages.join(', ')}`;
+            const attributeLabel = this.getText(attributeName, attributeName);
+            item.textContent = `${attributeLabel}: ${errorMessages.join(', ')}`;
             list.appendChild(item);
         });
 
@@ -519,8 +535,8 @@ class UIManager {
         const container = document.querySelector('#contenedor_IU_form .form-global-message') || document.createElement('div');
         container.className = 'form-global-message form-global-message--success';
         const successKey = 'validation.form.success';
-        const successText = this.getText(successKey, `Formulario válido para la acción ${action}.`);
-        container.textContent = successText.replace('{action}', action);
+        const successTemplate = this.getText(successKey, 'Formulario válido para la acción {action}.');
+        container.textContent = successTemplate.replace('{action}', action);
 
         const wrapper = document.getElementById('contenedor_IU_form');
         if (wrapper && !wrapper.contains(container)) {

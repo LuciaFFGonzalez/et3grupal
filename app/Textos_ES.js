@@ -1,11 +1,15 @@
 var textos_ES = {
 
 	// textos titulos generales
-	'text_titulo_app': 'Interfaz ET2 IU',
-	'text_titulo_menu': 'Opciones  Menú',
-	'text_titulo_pie': 'Pie de página',
+        'text_titulo_app': 'Interfaz ET2 IU',
+        'text_titulo_menu': 'Opciones  Menú',
+        'text_titulo_pie': 'Pie de página',
     'label_seleccioncolumnas': 'Seleccionar columnas',
-    
+    'text_article_section': 'Sección principal',
+    'text_team_data_title': 'Datos del equipo',
+    'text_api_link_label': 'API',
+    'text_api_link_title': 'Documentación API',
+
     // textos de test
     /*'res_estructura_tests':'Tabla verificacion estructura de test',
 	'resultadodef':'formato correcto estructura definicion tests',
@@ -123,6 +127,47 @@ var textos_ES = {
         'text_contenido_titulo_form_producto_DELETE': 'Formulario Eliminación Producto',
         'text_contenido_titulo_form_producto_SHOWCURRENT': 'Formulario Detalle Producto',
         'text_contenido_titulo_form_producto_SEARCH': 'Formulario Búsqueda Producto',
+
+    // textos interfaz genérica
+    'ui.placeholder.action': 'Render {action} para {entity}.',
+    'ui.placeholder.info': 'Se usarán las estructuras dinámicas cuando estén disponibles.',
+    'ui.placeholder.entity.unnamed': 'entidad sin nombre',
+    'validation.action.error.title': 'Se han encontrado errores al validar la acción {action}.',
+    'validation.form.success': 'Formulario válido para la acción {action}.',
+
+    // tabla de resultados
+    'table.actions.header': 'Acciones',
+    'table.empty.message': 'No hay resultados',
+    'action.add.button': 'Añadir',
+    'action.edit.button': 'Editar',
+    'action.delete.button': 'Eliminar',
+    'action.search.button': 'Buscar',
+    'action.showcurrent.button': 'Ver detalle',
+    'action.showcurrent.table.button': 'Ver',
+    'action.edit.table.button': 'Editar',
+    'action.search.reset.button': 'Limpiar',
+    'action.cancel.button': 'Cancelar',
+
+    // tabla datos equipo
+    'team.data.empty': 'No hay datos del equipo disponibles.',
+    'team.data.header.entrega': 'Entrega',
+    'team.data.header.nombre': 'Nombre',
+    'team.data.header.dni': 'DNI',
+    'team.data.header.horas': 'Horas',
+
+    // textos enumerados
+    'form.persona.menu_persona.option.Vegano': 'Vegano',
+    'form.persona.menu_persona.option.Celiaco': 'Celíaco',
+    'form.persona.menu_persona.option.AlergiaMarisco': 'Alergia Marisco',
+    'form.persona.genero_persona.option.Masculino': 'Masculino',
+    'form.persona.genero_persona.option.Femenino': 'Femenino',
+    'form.persona.genero_persona.option.Otro': 'Otro',
+
+    // errores personalizados faltantes
+    'dni_validate_KO': 'El DNI no es válido.',
+    'nie_validate_KO': 'El NIE no es válido.',
+    'dni_nie_format_KO': 'Formato de identificación incorrecto.',
+    'nie_format_KO': 'Formato NIE incorrecto. Debe empezar por X, Y o Z seguido de 7 dígitos y una letra.',
 
         // atributos producto
         'codigo_producto': 'Código',

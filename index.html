@@ -71,7 +71,7 @@
                 <span class='text_titulo_app'></span>
                 <img src="./iconos/Spain.png" onclick="changeLanguage('ES');" />
         <img src="./iconos/United-Kingdom.png" onclick="changeLanguage('EN');" />
-        <a id="api-doc-link" class="api-link" href="./API.html" title="Documentación API">API</a>
+        <a id="api-doc-link" class="api-link text_api_link_label" href="./API.html" title="">API</a>
         </header>
         <nav class='bordeado'><span class = 'text_titulo_menu' onclick="menu_work();"></span>
         </nav>
@@ -128,14 +128,14 @@
 		</section>
 	</section>
 
-        <article class='bordeado'>Sección article</article>
+        <article class='bordeado'><span class="text_article_section"></span></article>
 
         <section id="team-data-section" class='bordeado'>
-                <h2>Datos del equipo</h2>
+                <h2 class="text_team_data_title"></h2>
                 <div id="team-data-content"></div>
         </section>
 
-        <footer class='bordeado'>Pie de página</footer>
+        <footer class='bordeado'><span class="text_titulo_pie"></span></footer>
 
 	<!-- Overlay para acompañar el modal -->
 	<div id="modal_action_overlay"></div>
@@ -156,6 +156,7 @@
                         generalUIManager.hideInitialSections();
                         generalUIManager.initDefaultLanguage();
                         generalUIManager.renderTeamData('team-data-content');
+                        applyStaticTranslations();
                         renderEntityMenu();
                 }
 
@@ -164,6 +165,16 @@
                                 window.generalUIManager.languageManager.setLang(lang);
                         } else if (typeof setLang === 'function') {
                                 setLang(lang);
+                        }
+                }
+
+                function applyStaticTranslations() {
+                        const apiLink = document.getElementById('api-doc-link');
+                        const langManager = window.generalUIManager?.languageManager;
+
+                        if (apiLink && langManager?.registerTranslationElement) {
+                                langManager.registerTranslationElement(apiLink, 'text_api_link_label', 'API');
+                                langManager.registerTranslationElement(apiLink, 'text_api_link_title', 'Documentación API', 'title');
                         }
                 }
 

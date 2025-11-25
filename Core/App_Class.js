@@ -19,12 +19,21 @@ class GeneralUIManager {
 
     renderTeamData(containerId) {
         const container = document.getElementById(containerId);
+        const langManager = this.languageManager;
+
         if (!container) return;
 
         const dataset = typeof def_datos_NombreEquipo !== 'undefined' ? def_datos_NombreEquipo : [];
         // La tabla se genera dinámicamente desde def_datos_NombreEquipo para cumplir el requisito ET3.
         if (!Array.isArray(dataset) || dataset.length === 0) {
-            container.innerHTML = '<p class="team-data__empty">No hay datos del equipo disponibles.</p>';
+            const empty = document.createElement('p');
+            empty.className = 'team-data__empty';
+            const emptyKey = 'team.data.empty';
+            const emptyText = langManager?.getText?.(emptyKey) || 'No hay datos del equipo disponibles.';
+            empty.textContent = emptyText;
+            langManager?.registerTranslationElement?.(empty, emptyKey, 'No hay datos del equipo disponibles.');
+            container.innerHTML = '';
+            container.appendChild(empty);
             return;
         }
 
@@ -32,9 +41,18 @@ class GeneralUIManager {
         table.className = 'team-data__table bordeado';
 
         const headerRow = document.createElement('tr');
-        ['Entrega', 'Nombre', 'DNI', 'Horas'].forEach((label) => {
+        const headerConfig = [
+            { key: 'team.data.header.entrega', fallback: 'Entrega' },
+            { key: 'team.data.header.nombre', fallback: 'Nombre' },
+            { key: 'team.data.header.dni', fallback: 'DNI' },
+            { key: 'team.data.header.horas', fallback: 'Horas' },
+        ];
+
+        headerConfig.forEach(({ key, fallback }) => {
             const th = document.createElement('th');
-            th.textContent = label;
+            const translated = langManager?.getText?.(key) || fallback;
+            th.textContent = translated;
+            langManager?.registerTranslationElement?.(th, key, fallback);
             headerRow.appendChild(th);
         });
         table.appendChild(headerRow);
