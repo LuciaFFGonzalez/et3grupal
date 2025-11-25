@@ -76,7 +76,10 @@
             if (!Array.isArray(params) || params.length === 0) {
                 return 'Sin parámetros';
             }
-            return params.map((param) => `${param.name} (${param.type})`).join(', ');
+            return params.map((param) => {
+                const description = param.description ? `: ${param.description}` : '';
+                return `${param.name} (${param.type})${description}`;
+            }).join('<br>');
         }
 
         function renderApiDocs(data) {
@@ -128,7 +131,7 @@
                     row.appendChild(methodCell);
 
                     const paramsCell = document.createElement('td');
-                    paramsCell.textContent = buildParamsText(method.params);
+                    paramsCell.innerHTML = buildParamsText(method.params);
                     row.appendChild(paramsCell);
 
                     const returnCell = document.createElement('td');
