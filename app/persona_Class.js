@@ -96,6 +96,10 @@ class persona extends EntidadAbstracta{
 
                 this.lastSearchResults = [];
 
+                if (esTest !== 'test') {
+                        this.SEARCH();
+                }
+
                 // TODO: añadir getStructure() en la fase de entidades de ejemplo (Fase 5) para exponer la estructura ET3.
 
         }
@@ -762,6 +766,11 @@ class persona extends EntidadAbstracta{
         }
 
         SEARCH(formValues = null){
+                if (!Array.isArray(this.personasDummy)) {
+                        this.lastSearchResults = [];
+                        return this.lastSearchResults;
+                }
+
                 const filters = formValues || this.collectSearchFormValues();
                 const results = this.filterDummyData(filters);
                 this.lastSearchResults = results;
@@ -807,7 +816,8 @@ class persona extends EntidadAbstracta{
         }
 
         filterDummyData(filters = {}){
-                return this.personasDummy.filter((registro) => {
+                const dataset = Array.isArray(this.personasDummy) ? this.personasDummy : [];
+                return dataset.filter((registro) => {
                         return Object.entries(filters).every(([key, filterValue]) => this.matchesFilter(registro[key], filterValue));
                 });
         }
