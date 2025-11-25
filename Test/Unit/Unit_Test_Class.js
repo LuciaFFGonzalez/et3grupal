@@ -1,186 +1,282 @@
+// Suite de pruebas de unidad para ET3.
+// Para ejecutarla abre Test/Unit/index.html en el navegador (o crea manualmente new Unit_Test('persona'))
+// y revisa la tabla y la consola para ver el resultado detallado de los checks.
+
 class Unit_Test {
-    
-    constructor(entidad){
+    constructor(entidad = 'persona') {
+        this.nombreentidad = entidad || 'persona';
+        this.actions = ['ADD', 'EDIT', 'SEARCH', 'SHOWCURRENT'];
+        this.dom = new dom();
+        this.testResults = [];
 
-        
-        
-        this.nombreentidad = entidad;
+        this.runAllTests();
 
-        this.actions = ["ADD","EDIT","SEARCH"]
-        
-        var test_result = this.test_class_and_method_validation();
-
-        this.dom = new dom;
-
-        let marcados =	{
-					existe: {value:false, style:'background-color: red'}
+        const marcados = {
+            estado: { value: 'KO', style: 'background-color: #ffb3b3' },
         };
 
-        this.dom.showData('Div_IU_Test', test_result, marcados, true);
-
-
+        this.dom.showData('Div_IU_Test', this.testResults, marcados, true);
     }
 
+    runAllTests() {
+        this.testResults.push(...this.test_class_and_method_validation());
+        this.testResults.push(...this.test_form_generation_against_structure());
+        this.testResults.push(...this.test_validation_rules());
+        this.testResults.push(...this.test_dummy_search_results());
+        this.testResults.push(...this.test_producto_form_builder());
+        return this.testResults;
+    }
 
-    
+    /**
+     * Verifica la presencia de la clase, los métodos de validación por atributo y los createForm.
+     */
+    test_class_and_method_validation() {
+        const output = [];
+        const baseResult = { categoria: 'clase', caso: '', estado: 'OK', detalle: '' };
 
-    /** 
-     *    test if class exists due the class definition file is included
-     *    If class exists test if validation methods are presented
-     * 
-     *      @return an object with object in format {clase, accion, metodo, existe}
-    */
-    test_class_and_method_validation(){
-        
-        //const entidad = this.clases;
-        
-        // creo el objeto de salida que incluira todos los objetos de comprobacion de metodos de validacion
-        var output = [];
-        
-        let output_count = 0;
+        let entidadConstructor = null;
+        try {
+            entidadConstructor = eval(this.nombreentidad);
+        } catch (e) {
+            output.push({ ...baseResult, caso: 'Clase definida', estado: 'KO', detalle: e.message });
+            return output;
+        }
 
-        // recorro todas las clases definidas
-        //for (let i=0;i<entidad.length;i++){
-        
-            // creo el objeto de cada comprobacion de metodo de validacion
-            var partial_output = {
-                clase: "",
-                accion: "",
-                metodo : "",
-                existe: "",
-                error: ""
-            };
+        if (typeof entidadConstructor !== 'function') {
+            output.push({ ...baseResult, caso: 'Clase definida', estado: 'KO', detalle: 'No es una función' });
+            return output;
+        }
 
-            var validclass = true;
-            partial_output.clase = this.nombreentidad;
-            
-            // compruebo si la clase esta definida
-            // hago try catch para evitar el pete por referenceError si no existe
-            try{
-               if (typeof eval(this.nombreentidad) == 'function'){
-                    validclass = true;
-               }
-            }
-            // en caso contrario podria intentar cargar el fichero de definicion para solucionarlo [pull request]
-            catch(e){
-                partial_output.existe = false; 
-                output[output_count] = partial_output;
-                output_count++;
-                validclass = false;
-            }
-                
-            if (validclass){
-                // para instanciar la clase necesita que el eval del string que la identifica
-                var claseacrear =  eval(this.nombreentidad);               
-                this.entidad = new claseacrear('test');
-                
+        const entidad = new entidadConstructor('test');
+        const methodNames = Object.getOwnPropertyNames(Object.getPrototypeOf(entidad));
 
-                // el metodo __proto__ devuelve un array con todos los metodos que tiene el objeto
-                var listametodos = this.entidad.__proto__;
+        // Submit y validaciones de atributos por acción
+        ['ADD', 'EDIT', 'SEARCH'].forEach((accion) => {
+            const submitMethod = `${accion}_submit_${this.nombreentidad}`;
+            const submitExists = methodNames.includes(submitMethod);
+            output.push({
+                ...baseResult,
+                caso: `Existe ${submitMethod}`,
+                estado: submitExists ? 'OK' : 'KO',
+                detalle: submitExists ? '' : 'Método ausente',
+            });
 
-                // recorro las acciones para las cuales tengo validaciones
-                for (let j=0;j<this.actions.length;j++){
-                    var action = this.actions[j];
+            (entidad.attributes || []).forEach((atributo) => {
+                const validationMethod = `${accion}_${atributo}_validation`;
+                const exists = methodNames.includes(validationMethod);
+                output.push({
+                    ...baseResult,
+                    caso: `Validación ${accion} ${atributo}`,
+                    estado: exists ? 'OK' : 'KO',
+                    detalle: exists ? '' : 'Método ausente',
+                });
+            });
+        });
 
-                    // al entrar en la accion compruebo si existe la validacion de submit de accion
+        // CreateForm por acción
+        ['ADD', 'EDIT', 'DELETE', 'SEARCH', 'SHOWCURRENT'].forEach((accion) => {
+            const createMethod = `createForm_${accion}`;
+            const exists = methodNames.includes(createMethod);
+            output.push({
+                ...baseResult,
+                caso: `CreateForm ${accion}`,
+                estado: exists ? 'OK' : 'KO',
+                detalle: exists ? '' : 'Método ausente',
+            });
+        });
 
-                    // creo el nombre del metodo de submit de accion
-                    var misubmitfunction = action+'_submit_'+this.nombreentidad;
-                    // creo el registro de comprobacion del submit de accion para el resultado
-                    var submit_partial_output = {
-                            clase : this.nombreentidad,
-                            accion : action,
-                            metodo : misubmitfunction,
-                            existe : false,
-                            error : 'No verificado'
-                        };
-                    // si el metodo de submit de accion esta en los metodos de la clase actualizo la propiedad existe
-                    if (misubmitfunction in listametodos){
-                        submit_partial_output.existe = true;
-                        
-                            //var error = this.comprobar_metodo_funciona(misubmitfunction);
-                            //submit_partial_output.error = error;                        
-                        
-                    }
-                    else{
-                        submit_partial_output.existe = false;
-                    }
-                    // almaceno el registro de comprobacion del submit de accion en la salida
-                    output[output_count] = submit_partial_output;
-                    // actualizo el indice de la salida
-                    output_count++;
-
-                    // recorro todos los atributos para ver si tengo las validaciones para cada una de las acciones
-                    for (let x=0;x<this.entidad.attributes.length;x++){
-
-                        var atributo = this.entidad.attributes[x];
-                        var mifunction = action+"_"+atributo+"_validation";
-                        
-
-                        // compruebo si existe el nombre del metodo esperado en la lista de metodos del objeto.
-                        // si no es asi pongo el existe a false sino a true
-                        if (mifunction in listametodos){
-                            partial_output.existe = true
-                        }
-                        else{
-                            partial_output.existe = false;
-                        }
-
-                        partial_output.clase = this.nombreentidad;
-                        partial_output.accion = action;
-                        partial_output.metodo = mifunction;
-                        partial_output.error = "No verificado";
-                        output[output_count] = partial_output;
-                        
-                        partial_output = {clase: "",accion: "",metodo : "",existe: "", error:"No verificado"};
-                        output_count++;
-
-                    }
-
-                }
-
-                var actions_createForm = ['ADD','EDIT','DELETE','SEARCH','SHOWCURRENT'];
-
-                for (var k=0;k<actions_createForm.length;k++){
-                // compruebo create_form
-
-                    // creo el nombre del metodo de submit de accion
-                    var micreateFormfunction = 'createForm_'+actions_createForm[k];
-                    // creo el registro de comprobacion del submit de accion para el resultado
-                    var submit_partial_output = {
-                            clase : this.nombreentidad,
-                            accion : action,
-                            metodo : micreateFormfunction,
-                            existe : false,
-                            error : 'No verificado'
-                        };
-                    // si el metodo de submit de accion esta en los metodos de la clase actualizo la propiedad existe
-                    if (micreateFormfunction in listametodos){
-                        submit_partial_output.existe = true;
-                        
-                            //var error = this.comprobar_metodo_funciona(misubmitfunction);
-                            //submit_partial_output.error = error;                        
-                        
-                    }
-                    else{
-                        submit_partial_output.existe = false;
-                    }
-                    // almaceno el registro de comprobacion del submit de accion en la salida
-                    output[output_count] = submit_partial_output;
-                    // actualizo el indice de la salida
-                    output_count++;
-                }
-
-            }
-
-           
-            
-        //}
-console.log(output);
         return output;
-    
     }
 
-    
-    
+    /**
+     * Comprueba que el form builder pinta exactamente los atributos esperados para cada acción
+     * según la estructura de la entidad persona (omitiendo los ocultos en cada caso).
+     */
+    test_form_generation_against_structure() {
+        const output = [];
+        const baseResult = { categoria: 'formulario', caso: '', estado: 'OK', detalle: '' };
+        const entidad = new persona('test');
+        const structure = entidad.getStructure?.() || window['estructura_persona'] || {};
+        const attributeNames = Object.keys(structure.attributes || {});
+
+        this.actions.forEach((accion) => {
+            const container = document.createElement('div');
+            const builder = entidad.getFormRenderer();
+            const options = entidad.getFormOptionsForAction(accion, structure);
+            builder.createForm(container, structure, accion, {}, options);
+
+            const renderedAttributes = Array.from(
+                container.querySelectorAll('[data-attribute-name]')
+            ).map((el) => el.getAttribute('data-attribute-name'));
+            const renderedUnique = [...new Set(renderedAttributes)];
+
+            const expectedVisible = attributeNames.filter(
+                (attr) => !(options.hiddenAttributes || []).includes(attr)
+            );
+
+            const missing = expectedVisible.filter((attr) => !renderedUnique.includes(attr));
+            const extra = renderedUnique.filter((attr) => !expectedVisible.includes(attr));
+
+            const isOk = missing.length === 0 && extra.length === 0;
+            output.push({
+                ...baseResult,
+                caso: `Campos ${accion}`,
+                estado: isOk ? 'OK' : 'KO',
+                detalle: isOk
+                    ? `Renderizados ${renderedUnique.length} campos`
+                    : `Faltan: ${missing.join(', ') || '-'} | Sobran: ${extra.join(', ') || '-'}`,
+            });
+        });
+
+        return output;
+    }
+
+    /**
+     * Valida combinaciones de datos incorrectos contra las reglas de estructura y las
+     * validaciones personalizadas de dni/nie.
+     */
+    test_validation_rules() {
+        const output = [];
+        const baseResult = { categoria: 'validacion', caso: '', estado: 'OK', detalle: '' };
+        const estructura = window['estructura_persona'] || {};
+        const validations = new Validations();
+        const entidad = new persona('test');
+
+        const casos = [
+            {
+                caso: 'Nombre demasiado corto',
+                attribute: 'nombre_persona',
+                action: 'ADD',
+                value: 'A',
+                expectedErrors: ['ERR_MIN_SIZE'],
+                expectValid: false,
+            },
+            {
+                caso: 'Apellidos demasiado largos',
+                attribute: 'apellidos_persona',
+                action: 'ADD',
+                value: 'A'.repeat(80),
+                expectedErrors: ['ERR_MAX_SIZE'],
+                expectValid: false,
+            },
+            {
+                caso: 'Nombre con caracteres inválidos',
+                attribute: 'nombre_persona',
+                action: 'ADD',
+                value: 'Ana1',
+                expectedErrors: ['ERR_EXP_REG'],
+                expectValid: false,
+            },
+            {
+                caso: 'DNI con letra incorrecta',
+                attribute: 'dni',
+                action: 'ADD',
+                value: '12345678A',
+                expectedErrors: ['dni_validate_KO'],
+                expectValid: false,
+            },
+            {
+                caso: 'NIE con formato inválido',
+                attribute: 'dni',
+                action: 'ADD',
+                value: 'A2345678B',
+                expectedErrors: ['dni_nie_format_KO'],
+                expectValid: false,
+            },
+            {
+                caso: 'Teléfono con letras',
+                attribute: 'telefono_persona',
+                action: 'EDIT',
+                value: '12345abc',
+                expectedErrors: ['ERR_MIN_SIZE', 'ERR_EXP_REG'],
+                expectValid: false,
+            },
+            {
+                caso: 'Email válido',
+                attribute: 'email_persona',
+                action: 'ADD',
+                value: 'user@example.com',
+                expectedErrors: [],
+                expectValid: true,
+            },
+        ];
+
+        casos.forEach((caso) => {
+            const rules = estructura?.attributes?.[caso.attribute]?.rules?.validations?.[caso.action] || {};
+            const result = validations.validateValueAgainstRules(caso.value, rules, {
+                attributeName: caso.attribute,
+                action: caso.action,
+                entityInstance: entidad,
+            });
+
+            const hasExpectedErrors = caso.expectedErrors.every((code) => result.errorCodes.includes(code));
+            const validityMatches = result.isValid === caso.expectValid;
+            const estado = hasExpectedErrors && validityMatches ? 'OK' : 'KO';
+            const detalle = `Errores: ${result.errorCodes.join(', ') || 'ninguno'}`;
+
+            output.push({ ...baseResult, caso: caso.caso, estado, detalle });
+        });
+
+        return output;
+    }
+
+    /**
+     * Comprueba que la búsqueda dummy devuelve el número esperado de resultados.
+     */
+    test_dummy_search_results() {
+        const output = [];
+        const baseResult = { categoria: 'search', caso: '', estado: 'OK', detalle: '' };
+        const entidad = new persona('test');
+
+        const pruebas = [
+            { caso: 'Filtro por titulacion GREI', filtros: { titulacion_persona: 'GREI' }, esperado: 1 },
+            { caso: 'Filtro por dieta Vegano', filtros: { menu_persona: ['Vegano'] }, esperado: 3 },
+            { caso: 'Filtro por DNI parcial 0000', filtros: { dni: '0000' }, esperado: 1 },
+        ];
+
+        pruebas.forEach((prueba) => {
+            const resultados = entidad.filterDummyData(prueba.filtros);
+            const estado = resultados.length === prueba.esperado ? 'OK' : 'KO';
+            const detalle = `Resultados: ${resultados.length} (esperado ${prueba.esperado})`;
+            output.push({ ...baseResult, caso: prueba.caso, estado, detalle });
+        });
+
+        return output;
+    }
+
+    /**
+     * Verifica de forma mínima que el form builder puede construir formularios para la entidad producto.
+     */
+    test_producto_form_builder() {
+        const output = [];
+        const baseResult = { categoria: 'formulario', caso: '', estado: 'OK', detalle: '' };
+        const estructura = window['estructura_producto'];
+
+        if (!estructura) {
+            output.push({
+                ...baseResult,
+                caso: 'Estructura producto disponible',
+                estado: 'KO',
+                detalle: 'estructura_producto no está cargada',
+            });
+            return output;
+        }
+
+        const container = document.createElement('div');
+        const builder = new DOMFormTableBuilder();
+        builder.createForm(container, estructura, 'ADD', {}, { useEntityPrefix: false });
+
+        const renderedAttributes = Array.from(container.querySelectorAll('[data-attribute-name]')).map((el) =>
+            el.getAttribute('data-attribute-name')
+        );
+        const renderedUnique = [...new Set(renderedAttributes)];
+        const expected = Object.keys(estructura.attributes || {});
+
+        const missing = expected.filter((attr) => !renderedUnique.includes(attr));
+        const estado = missing.length === 0 ? 'OK' : 'KO';
+        const detalle = missing.length === 0 ? 'Formulario generado' : `Faltan: ${missing.join(', ')}`;
+
+        output.push({ ...baseResult, caso: 'Formulario producto ADD', estado, detalle });
+        return output;
+    }
 }
