@@ -45,7 +45,7 @@ class DOMFormTableBuilder {
      * @param {string} action - Action to represent (ADD, EDIT, SEARCH, SHOWCURRENT).
      * @param {Object} [tupleData={}] - Optional tuple data to prefill the form.
      */
-    createForm(containerElement, entityStructure, action, tupleData = {}) {
+    createForm(containerElement, entityStructure, action, tupleData = {}, options = {}) {
         if (!containerElement || !entityStructure || !entityStructure.attributes) {
             return;
         }
@@ -53,24 +53,48 @@ class DOMFormTableBuilder {
         containerElement.innerHTML = '';
 
         const formElement = document.createElement('form');
-        formElement.id = `form_${entityStructure.entity}_${action.toLowerCase()}`;
-        this.defaultFormClassList.forEach((cls) => formElement.classList.add(cls));
+        const {
+            formId,
+            formClasses = [],
+            formAttributes = {},
+            hiddenAttributes = [],
+            readonlyAttributes = [],
+            disabledAttributes = [],
+            showActions = true,
+            useEntityPrefix = true,
+        } = options;
+
+        formElement.id = formId || `form_${entityStructure.entity}_${action.toLowerCase()}`;
+        [...this.defaultFormClassList, ...formClasses].forEach((cls) => formElement.classList.add(cls));
         formElement.setAttribute('data-entity', entityStructure.entity);
         formElement.setAttribute('data-action', action);
 
+        Object.entries(formAttributes).forEach(([attr, value]) => {
+            if (value !== undefined && value !== null) {
+                formElement.setAttribute(attr, value);
+            }
+        });
+
         Object.entries(entityStructure.attributes).forEach(([attributeName, definition]) => {
+            if (hiddenAttributes.includes(attributeName)) return;
+
             const wrapper = document.createElement('div');
             wrapper.classList.add(this.defaultFieldWrapperClass);
 
             const label = document.createElement('label');
-            label.htmlFor = `${entityStructure.entity}_${attributeName}`;
+            const labelForId = useEntityPrefix ? `${entityStructure.entity}_${attributeName}` : attributeName;
+            label.htmlFor = labelForId;
             label.classList.add(this.defaultLabelClass);
             const labelKey = definition.label || `form.${entityStructure.entity}.${attributeName}.label`;
             this.#setTranslatedText(label, labelKey, definition.label || attributeName);
             wrapper.appendChild(label);
 
             const fieldValue = tupleData[attributeName];
-            const fieldElement = this.#buildField(attributeName, definition, action, fieldValue, entityStructure.entity);
+            const fieldElement = this.#buildField(attributeName, definition, action, fieldValue, entityStructure.entity, {
+                readonlyAttributes,
+                disabledAttributes,
+                useEntityPrefix,
+            });
 
             wrapper.appendChild(fieldElement);
 
@@ -79,27 +103,29 @@ class DOMFormTableBuilder {
             formElement.appendChild(wrapper);
         });
 
-        const actionsContainer = document.createElement('div');
-        actionsContainer.classList.add('form-actions');
+        if (showActions) {
+            const actionsContainer = document.createElement('div');
+            actionsContainer.classList.add('form-actions');
 
-        const submitButton = document.createElement('button');
-        submitButton.type = 'submit';
-        submitButton.classList.add('boton', 'bordeado');
-        const submitKey = `action.${action.toLowerCase()}.button`;
-        this.#setTranslatedText(submitButton, submitKey, action);
-        actionsContainer.appendChild(submitButton);
+            const submitButton = document.createElement('button');
+            submitButton.type = 'submit';
+            submitButton.classList.add('boton', 'bordeado');
+            const submitKey = `action.${action.toLowerCase()}.button`;
+            this.#setTranslatedText(submitButton, submitKey, action);
+            actionsContainer.appendChild(submitButton);
 
-        const resetButton = document.createElement('button');
-        resetButton.type = action === 'SEARCH' ? 'reset' : 'button';
-        resetButton.classList.add('boton-secundario', 'bordeado');
-        const resetKey = action === 'SEARCH' ? 'action.search.reset.button' : 'action.cancel.button';
-        const resetFallback = action === 'SEARCH' ? 'Limpiar' : 'Cancelar';
-        this.#setTranslatedText(resetButton, resetKey, resetFallback);
-        actionsContainer.appendChild(resetButton);
+            const resetButton = document.createElement('button');
+            resetButton.type = action === 'SEARCH' ? 'reset' : 'button';
+            resetButton.classList.add('boton-secundario', 'bordeado');
+            const resetKey = action === 'SEARCH' ? 'action.search.reset.button' : 'action.cancel.button';
+            const resetFallback = action === 'SEARCH' ? 'Limpiar' : 'Cancelar';
+            this.#setTranslatedText(resetButton, resetKey, resetFallback);
+            actionsContainer.appendChild(resetButton);
 
-        // Hook: attach form-level validation and submit handlers here.
+            // Hook: attach form-level validation and submit handlers here.
 
-        formElement.appendChild(actionsContainer);
+            formElement.appendChild(actionsContainer);
+        }
         containerElement.appendChild(formElement);
     }
 
@@ -112,10 +138,17 @@ class DOMFormTableBuilder {
      * @param {*} value - Prefill value for the field.
      * @returns {HTMLElement}
      */
-    #buildField(name, definition, action, value, entityName) {
+    #buildField(name, definition, action, value, entityName, options = {}) {
         const { html = {} } = definition;
         const tag = (html.tag || 'input').toLowerCase();
         let element;
+        const useEntityPrefix = options.useEntityPrefix !== false;
+        const readonlyAttributes = options.readonlyAttributes || [];
+        const disabledAttributes = options.disabledAttributes || [];
+        const baseId = useEntityPrefix ? `${entityName}_${name}` : name;
+
+        const isReadonly = readonlyAttributes.includes(name) || action === 'SHOWCURRENT';
+        const isDisabled = disabledAttributes.includes(name);
 
         switch (tag) {
             case 'textarea':
@@ -123,7 +156,7 @@ class DOMFormTableBuilder {
                 if (html.rows) element.rows = html.rows;
                 if (html.columns) element.cols = html.columns;
                 element.value = value || '';
-                element.id = `${entityName}_${name}`;
+                element.id = baseId;
                 element.name = name;
                 break;
             case 'select':
@@ -139,14 +172,14 @@ class DOMFormTableBuilder {
                     }
                     element.appendChild(optionElement);
                 });
-                element.id = `${entityName}_${name}`;
+                element.id = baseId;
                 element.name = name;
                 break;
             case 'radio':
                 element = document.createElement('div');
                 element.classList.add('radio-group');
                 (html.options || []).forEach((optionValue, index) => {
-                    const radioId = index === 0 ? `${entityName}_${name}` : `${entityName}_${name}_radio_${index}`;
+                    const radioId = index === 0 ? baseId : `${baseId}_radio_${index}`;
                     const radioWrapper = document.createElement('div');
                     radioWrapper.classList.add('radio-item');
 
@@ -157,6 +190,7 @@ class DOMFormTableBuilder {
                     inputElement.setAttribute('data-attribute-name', name);
                     inputElement.value = optionValue;
                     inputElement.checked = value === optionValue;
+                    inputElement.disabled = isDisabled || isReadonly;
 
                     const optionLabel = document.createElement('label');
                     optionLabel.htmlFor = radioId;
@@ -173,7 +207,7 @@ class DOMFormTableBuilder {
                 element.classList.add('checkbox-group');
                 const checkboxOptions = html.multiple ? html.options || [] : [definition.label || name];
                 checkboxOptions.forEach((optionValue, index) => {
-                    const checkboxId = index === 0 ? `${entityName}_${name}` : `${entityName}_${name}_checkbox_${index}`;
+                    const checkboxId = index === 0 ? baseId : `${baseId}_checkbox_${index}`;
                     const checkboxWrapper = document.createElement('div');
                     checkboxWrapper.classList.add('checkbox-item');
 
@@ -184,6 +218,7 @@ class DOMFormTableBuilder {
                     inputElement.setAttribute('data-attribute-name', name);
                     inputElement.value = optionValue;
                     inputElement.checked = this.#isSelectedValue(value, optionValue, true);
+                    inputElement.disabled = isDisabled || isReadonly;
 
                     const optionLabel = document.createElement('label');
                     optionLabel.htmlFor = checkboxId;
@@ -204,7 +239,7 @@ class DOMFormTableBuilder {
                 if (html.component_visible_size) {
                     element.size = html.component_visible_size;
                 }
-                element.id = `${entityName}_${name}`;
+                element.id = baseId;
                 element.name = name;
                 break;
         }
@@ -212,11 +247,20 @@ class DOMFormTableBuilder {
         if (tag !== 'radio' && tag !== 'checkbox') {
             element.classList.add(this.defaultInputClass);
             element.setAttribute('data-attribute-name', name);
+            if (isReadonly) {
+                element.readOnly = true;
+            }
+            if (isDisabled) {
+                element.disabled = true;
+            }
         }
 
-        if (action === 'SHOWCURRENT') {
-            element.readOnly = true;
-            element.disabled = tag === 'select' || tag === 'radio' || tag === 'checkbox';
+        if (tag === 'select' && (isDisabled || isReadonly)) {
+            element.disabled = true;
+        }
+
+        if (tag === 'radio' || tag === 'checkbox') {
+            element.setAttribute('data-attribute-name', name);
         }
 
         return element;

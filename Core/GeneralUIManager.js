@@ -173,6 +173,10 @@ class UIManager {
             this.renderPlaceholder(action);
         }
 
+        this.applyFormConventions(action);
+        this.updateFormTitle(action);
+        this.ensureFormVisibility();
+        this.applyLanguage();
         this.attachValidationHooks(action);
     }
 
@@ -215,6 +219,54 @@ class UIManager {
         const form = document.createElement('form');
         form.id = 'form_iu';
         container.appendChild(form);
+    }
+
+    applyFormConventions(action) {
+        const container = document.getElementById('contenedor_IU_form');
+        const form = container?.querySelector('form');
+        if (!form) return;
+
+        if (!form.id) {
+            form.id = 'form_iu';
+        }
+        form.classList.add('formulario');
+        form.setAttribute('data-action', action);
+        if (this.currentStructure?.entity) {
+            form.setAttribute('data-entity', this.currentStructure.entity);
+        }
+
+        const hasActionMethod = typeof this.currentEntity?.[action] === 'function';
+        if (hasActionMethod && !form.getAttribute('action')) {
+            form.setAttribute('action', `javascript:entidad.${action}();`);
+        }
+    }
+
+    updateFormTitle(action) {
+        const titleSpan = document.getElementById('class_contenido_titulo_form');
+        if (!titleSpan || !this.currentStructure?.entity) return;
+
+        const key = `text_contenido_titulo_form_${this.currentStructure.entity}_${action}`;
+        const fallback = `${action} ${this.currentStructure.entity}`;
+        titleSpan.className = `${key} text_titulo_formulario`;
+        const translated = this.getText(key, fallback);
+        titleSpan.textContent = translated;
+        this.languageManager?.registerTranslationElement?.(titleSpan, key, fallback);
+    }
+
+    ensureFormVisibility() {
+        const wrapper = document.getElementById('Div_IU_form');
+        if (wrapper) {
+            wrapper.style.display = 'block';
+        }
+    }
+
+    applyLanguage() {
+        const activeLang = this.languageManager?.getActiveLanguage?.();
+        if (activeLang && typeof this.languageManager?.setLanguage === 'function') {
+            this.languageManager.setLanguage(activeLang);
+        } else if (typeof setLang === 'function') {
+            setLang(activeLang);
+        }
     }
 
     attachValidationHooks(action) {

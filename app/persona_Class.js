@@ -129,110 +129,121 @@ class persona extends EntidadAbstracta{
 	 * replace the content of section element with a particular entity menu
 	 * @returns 
 	 */
-	manual_form_creation(){
-		var form_content = `
-			<form id = 'form_iu' action="" method="POST" enctype="multipart/form-data" onsubmit="" class='formulario'>
+        manual_form_creation(){
+                const container = document.createElement('div');
+                const structure = this.getStructure?.() || window['estructura_persona'] || {};
+                const builder = this.getFormRenderer();
+                builder.createForm(container, structure, 'ADD', {}, {
+                        formId: 'form_iu',
+                        formClasses: ['formulario'],
+                        showActions: false,
+                        useEntityPrefix: false,
+                });
+                return container.innerHTML;
 
-				<label class="label_dni">dni</label>
-				<input type='text' id='dni' name='dni'></input>
-				<span id="span_error_dni"><a id="error_dni"></a></span>
-				<br>
-				
-				<label class="label_nombre_persona">Nombre de pila</label>
-				<input type='text' id='nombre_persona' name='nombre_persona' ></input>
-				<span id="span_error_nombre_persona" ><a id="error_nombre_persona"></a></span>
-				<br>
-				
-				<label class="label_apellidos_persona">apellidos</label>
-				<input type='text' id='apellidos_persona' name='apellidos_persona'></input>
-				<span id="span_error_apellidos_persona" ><a id="error_apellidos_persona"></a></span>
-				<br>
-				
-				<label class="label_fechaNacimiento_persona">Fecha de Nacimiento</label>
-				<input type='text' id='fechaNacimiento_persona' name='fechaNacimiento_persona'></input>
-				<span id="span_error_fechaNacimiento_persona" ><a id="error_fechaNacimiento_persona"></a></span>
-				
-				<br>
-				<label class="label_direccion_persona">Dirección Postal</label>
-				<textarea rows="5" cols="33" type='text' id='direccion_persona' name='direccion_persona'></textarea>
-				<span id="span_error_direccion_persona" ><a id="error_direccion_persona"></a></span>
-				<br>
+        }
 
-				<label class="label_telefono_persona">Teléfono Persona</label>
-				<input type='text' id='telefono_persona' name='telefono_persona'></input>
-				<span id="span_error_telefono_persona" ><a id="error_telefono_persona"></a></span>
-				
-				<br>
-				<label class="label_email_persona">Correo Electronico</label>
-				<input type='text' id='email_persona' name='email_persona'></input>
-				<span id="span_error_email_persona" ><a id="error_email_persona"></a></span>
+        getFormRenderer() {
+                return window.uiManager?.formRenderer
+                        || new DOMFormTableBuilder({ languageManager: window.generalUIManager?.languageManager });
+        }
 
-				<br>
-				<label class="label_titulacion_persona">Titulación</label>
-				<select id="titulacion_persona" name='titulacion_persona'>
-					<option value="GREI">GREI</option>
-					<option value="GRIA">GRIA</option>
-					<option value="MEI">MEI</option>
-					<option value="MIA">MIA</option>
-					<option value="PCEO">PCEO</option>
-				</select>
-				<span id="span_error_titulacion_persona" ><a id="error_titulacion_persona"></a></span>
+        getFormOptionsForAction(action, structure = {}) {
+                const options = {
+                        formId: 'form_iu',
+                        formClasses: ['formulario'],
+                        useEntityPrefix: false,
+                        formAttributes: {
+                                enctype: 'multipart/form-data',
+                                method: 'post',
+                        },
+                };
 
-				<br>
-				<label id="label_menu_persona" class="label_menu_persona">Menu </label>
+                if (typeof this[action] === 'function') {
+                        options.formAttributes.action = `javascript:entidad.${action}();`;
+                }
 
-				<div class="checkbox_group">
-					<input type="checkbox" name = "menu_persona" value="Vegano" /> 
-					<label id='label_Vegano' class="label_Vegano">Vegano</label>
-				</div>
+                if (action === 'ADD') {
+                        options.hiddenAttributes = ['foto_persona'];
+                }
 
-				<div class="checkbox_group">
-					<input type="checkbox" name = "menu_persona" value="Celiaco" />
-					<label id='label_Celiaco' class="label_Celiaco">Celiaco</label>
-				</div>
+                if (action === 'EDIT') {
+                        options.readonlyAttributes = ['dni', 'foto_persona'];
+                }
 
-				<div class="checkbox_group">
-					<input type="checkbox" name = "menu_persona" value="AlergiaMarisco" /> 
-					<label id='label_AlergiaMarisco' class="label_AlergiaMarisco">Alergia Marisco</label> 
-				</div>
-				<span id="span_error_menu_persona" ><a id="error_menu_persona"></a></span>
+                if (action === 'DELETE') {
+                        const attributeNames = Object.keys(structure.attributes || {});
+                        options.readonlyAttributes = attributeNames;
+                        options.disabledAttributes = attributeNames;
+                }
 
-				<br>
-				<label id="label_genero_persona" class="label_genero_persona">Genero </label>
-				
-				<div class="checkbox_group">
-					<input type="radio" name = "genero_persona" value="Masculino" /> 
-					<label id='label_Masculino' class="label_Masculino">Masculino</label>
-				</div>
+                if (action === 'SHOWCURRENT') {
+                        const attributeNames = Object.keys(structure.attributes || {});
+                        options.readonlyAttributes = attributeNames;
+                        options.disabledAttributes = attributeNames;
+                        options.showActions = false;
+                }
 
-				<div class="checkbox_group">
-					<input type="radio" name = "genero_persona" value="Femenino" /> 
-					<label id='label_Femenino' class="label_Femenino">Femenino</label>
-				</div>
+                return options;
+        }
 
-				<div class="checkbox_group">
-					<input type="radio" name = "genero_persona" value="Otro" /> 
-					<label id='label_Otro' class="label_Otro">Otro</label>
-				</div>
+        renderActionForm(action, tupleData = {}) {
+                const container = document.getElementById('contenedor_IU_form');
+                if (!container) return null;
 
-				<span id="span_error_genero_persona" ><a id="error_genero_persona"></a></span>
+                const structure = this.getStructure?.() || window['estructura_persona'] || {};
+                const builder = this.getFormRenderer();
+                const options = this.getFormOptionsForAction(action, structure);
+                builder.createForm(container, structure, action, tupleData, options);
 
-				<br>
-				<label id="label_foto_persona" class="label_foto_persona">Foto Persona</label>
-				<input type='text' id='foto_persona' name='foto_persona'></input>
-				<span id="span_error_foto_persona"><a id="error_foto_persona"></a></span>
-				<a id="link_foto_persona" href="http://193.147.87.202/ET2/filesuploaded/files_foto_persona/"><img src="./iconos/FILE.png" /></a>
-				
-				<label id="label_nuevo_foto_persona" class="label_nuevo_foto_persona">Nueva Foto Persona</label>
-				<input type='file' id='nuevo_foto_persona' name='nuevo_foto_persona'></input>
-				<span id="span_error_nuevo_foto_persona"><a id="error_nuevo_foto_persona"></a></span>
-				<br>
+                this.decorateForm(action, tupleData);
+                return container.querySelector('form');
+        }
 
-			</form>
-		`;
-		return form_content;
-		
-	}
+        decorateForm(action, tupleData = {}) {
+                const wrapper = document.getElementById('Div_IU_form');
+                if (wrapper) {
+                        wrapper.style.display = 'block';
+                }
+
+                this.addFotoPersonaLink(tupleData);
+
+                const langManager = window.generalUIManager?.languageManager;
+                if (langManager?.refreshRegisteredTranslations) {
+                        langManager.refreshRegisteredTranslations();
+                } else if (typeof setLang === 'function') {
+                        setLang(langManager?.getActiveLanguage?.());
+                }
+        }
+
+        addFotoPersonaLink(tupleData = {}) {
+                const form = document.getElementById('form_iu');
+                if (!form) return;
+
+                const fotoInput = form.querySelector('[data-attribute-name="foto_persona"]');
+                if (!fotoInput) return;
+                const wrapper = fotoInput.closest('.form-group') || fotoInput.parentElement;
+                if (!wrapper) return;
+
+                const existingLink = wrapper.querySelector('.link_foto_persona');
+                if (existingLink) {
+                        existingLink.remove();
+                }
+
+                if (tupleData.foto_persona) {
+                        const link = document.createElement('a');
+                        link.className = 'link_foto_persona';
+                        link.href = `http://193.147.87.202/ET2/filesuploaded/files_foto_persona/${tupleData.foto_persona}`;
+                        link.target = '_blank';
+
+                        const img = document.createElement('img');
+                        img.src = './iconos/FILE.png';
+                        img.alt = 'foto_persona';
+
+                        link.appendChild(img);
+                        wrapper.appendChild(link);
+                }
+        }
 
 	/**********************************************************************************************
 		fields validations for ADD
@@ -495,274 +506,26 @@ class persona extends EntidadAbstracta{
 	
 	}
 
-	createForm_EDIT(fila){
+        createForm_EDIT(fila){
+                this.renderActionForm('EDIT', fila || {});
 
-		// limpiar poner titulo y poner visible el formulario
-		document.getElementById('contenedor_IU_form').innerHTML = this.manual_form_creation();
-		this.dom.show_element('Div_IU_form','block');
-
-		this.dom.remove_class_value('class_contenido_titulo_form', 'text_contenido_titulo_form');
-		this.dom.assign_class_value('class_contenido_titulo_form', 'text_contenido_titulo_form_persona_EDIT');
-
-		// rellenar onsubmit y action
-		this.dom.assign_property_value('form_iu','onsubmit','return entidad.EDIT_submit_'+this.nombreentidad);
-		this.dom.assign_property_value('form_iu', 'action', 'javascript:entidad.EDIT();');
-
-		//activar el link al fichero
-		this.dom.assign_property_value('link_foto_persona', 'href', 'http://193.147.87.202/ET2/filesuploaded/files_foto_persona/'+fila.foto_persona);
-		
-		// modificar presentacion (en este caso concreto para fecha)
-		fila.fechaNacimiento_persona = this.mostrarcambioatributo('fechaNacimiento_persona',fila.fechaNacimiento_persona);
-
-		// rellenar valores
-		this.dom.rellenarvaloresform(fila);
-		
-		// poner las validaciones
-		this.dom.colocarvalidaciones('form_iu','EDIT');
-
-		// poner inactivos los campos correspondientes
-		this.dom.assign_property_value('dni','readonly','true');
-		this.dom.assign_property_value('foto_persona','readonly','true');
-
-		// colocar boton de submit
-		this.dom.colocarboton('EDIT');
-
-		setLang();
-
-	}
-
-	createForm_DELETE(fila){
-
-		// limpiar y poner visible el formulario
-		document.getElementById('contenedor_IU_form').innerHTML = this.manual_form_creation();
-	
-		this.dom.show_element('Div_IU_form','block');
-		this.dom.remove_class_value('class_contenido_titulo_form','text_contenido_titulo_form');
-		this.dom.assign_class_value('class_contenido_titulo_form', 'text_contenido_titulo_form_persona_DELETE');
-
-		// rellenar y action
-		this.dom.assign_property_value('form_iu', 'action', 'javascript:entidad.DELETE();');
-
-		// poner no visible el campo nuevo_foto_persona (solo se puede ver el nombre de fichero)
-		this.dom.hide_element_form('nuevo_foto_persona');
-		this.dom.assign_property_value('link_foto_persona', 'href', 'http://193.147.87.202/ET2/filesuploaded/files_foto_persona/'+fila.foto_persona);
-		
-		// modificar presentacion (en este caso concreto para fecha)
-		fila.fechaNacimiento_persona = this.mostrarcambioatributo('fechaNacimiento_persona',fila.fechaNacimiento_persona);
-
-		// rellenar valores
-		this.dom.rellenarvaloresform(fila);
-
-		// poner inactivos los campos correspondientes
-		this.dom.colocartodosreadonly('form_iu');
-
-		// colocar boton de submit
-		this.dom.colocarboton('DELETE');
-
-		setLang();
-	}
-
-	createForm_SHOWCURRENT(fila){
-		// limpiar y poner visible el formulario
-		document.getElementById('contenedor_IU_form').innerHTML = this.manual_form_creation();
-		this.dom.show_element('Div_IU_form','block');
-		this.dom.remove_class_value('class_contenido_titulo_form', 'text_contenido_titulo_form');
-		this.dom.assign_class_value('class_contenido_titulo_form', 'text_contenido_titulo_form_persona_SHOWCURRENT');
-
-		// rellenar y action
-		//this.dom.assign_property_value('form_iu', 'action', 'javascript:entidad.DELETE();');
-
-		// poner no visible el campo nuevo_foto_persona (solo se puede ver el nombre de fichero)
-		this.dom.hide_element_form('nuevo_foto_persona');
-		this.dom.assign_property_value('link_foto_persona', 'href', 'http://193.147.87.202/ET2/filesuploaded/files_foto_persona/'+fila.foto_persona);
-		
-		// modificar presentacion (en este caso concreto para fecha)
-		fila.fechaNacimiento_persona = this.mostrarcambioatributo('fechaNacimiento_persona',fila.fechaNacimiento_persona);
-
-		// rellenar valores
-		this.dom.rellenarvaloresform(fila);
-
-		// poner inactivos los campos correspondientes
-		this.dom.colocartodosreadonly('form_iu');
-
-		// colocar boton de submit
-		//this.colocarboton('SHOWCURRENT');
-
-		setLang();
-
-	}
-
-	createForm_ADD(){
-
-		// poner titulo al formulario
-
-		// limpiar y poner visible el formulario
-		document.getElementById('contenedor_IU_form').innerHTML = this.manual_form_creation();
-		this.dom.show_element('Div_IU_form','block');
-		this.dom.remove_class_value('class_contenido_titulo_form', 'text_contenido_titulo_form');
-		this.dom.assign_class_value('class_contenido_titulo_form', 'text_contenido_titulo_form_persona_ADD');
-
-		// poner onsubmit
-		this.dom.assign_property_value('form_iu','onsubmit','return entidad.ADD_submit_'+this.nombreentidad+'()');
-
-		// poner action
-		this.dom.assign_property_value('form_iu', 'action', 'javascript:entidad.ADD();');
-		
-		// poner no visible el campo foto_persona (solo se puede subir fichero)
-		this.dom.hide_element_form('foto_persona');
-		this.dom.hide_element('link_foto_persona');
-
-		// rellenar valores
-		// en ADD no hay valores que rellenar
-
-		// poner las validaciones
-		this.dom.colocarvalidaciones('form_iu','ADD');
-
-		// poner inactivos los campos correspondientes
-		// en ADD no hay inactivos... si hubiese un autoincremental ya no se mostraria
-
-		// colocar boton de submit
-		this.dom.colocarboton('ADD');
-
-		setLang();
-	}
-
-        createForm_SEARCH(){
-                const container = document.getElementById('contenedor_IU_form');
-                if (!container) return;
-
-                const formBuilder = window.uiManager?.formRenderer
-                        || new DOMFormTableBuilder({ languageManager: window.generalUIManager?.languageManager });
-
-                const structure = this.getStructure?.() || window['estructura_persona'] || {};
-
-                formBuilder.createForm(container, structure, 'SEARCH', {});
-
-                const form = container.querySelector('form');
-                if (form) {
-                        form.id = 'form_iu';
-                        form.classList.add('formulario');
-                }
-
-                const titleSpan = document.getElementById('class_contenido_titulo_form');
-                if (titleSpan) {
-                        const titleKey = 'text_contenido_titulo_form_persona_SEARCH';
-                        titleSpan.className = `${titleKey} text_titulo_formulario`;
-                        const translatedTitle = window.generalUIManager?.languageManager?.getText?.(titleKey) || '';
-                        titleSpan.textContent = translatedTitle;
-                        window.generalUIManager?.languageManager?.registerTranslationElement?.(titleSpan, titleKey, translatedTitle);
-                }
-
-                const wrapper = document.getElementById('Div_IU_form');
-                if (wrapper) {
-                        wrapper.style.display = 'block';
-                }
-
-                const activeLang = window.generalUIManager?.languageManager?.getActiveLanguage?.() || 'ES';
-                if (window.generalUIManager?.languageManager?.setLang) {
-                        window.generalUIManager.languageManager.setLang(activeLang);
-                } else if (typeof setLang === 'function') {
-                        setLang(activeLang);
-                }
         }
 
-        buildSearchField(attributeName, definition = {}) {
-                const html = definition.html || {};
-                const tag = (html.tag || 'input').toLowerCase();
-                const inputClass = 'form-control';
+        createForm_DELETE(fila){
+                this.renderActionForm('DELETE', fila || {});
+        }
 
-                if (tag === 'textarea') {
-                        const textarea = document.createElement('textarea');
-                        textarea.id = attributeName;
-                        textarea.name = attributeName;
-                        textarea.rows = html.rows || 4;
-                        textarea.cols = html.columns || 40;
-                        textarea.className = inputClass;
-                        textarea.setAttribute('data-attribute-name', attributeName);
-                        return textarea;
-                }
+        createForm_SHOWCURRENT(fila){
+                this.renderActionForm('SHOWCURRENT', fila || {});
 
-                if (tag === 'select') {
-                        const select = document.createElement('select');
-                        select.id = attributeName;
-                        select.name = attributeName;
-                        if (html.multiple) select.multiple = true;
-                        select.className = inputClass;
-                        select.setAttribute('data-attribute-name', attributeName);
+        }
 
-                        (html.options || []).forEach((optionValue) => {
-                                const option = document.createElement('option');
-                                option.value = optionValue;
-                                option.className = `label_${optionValue}`;
-                                option.textContent = optionValue;
-                                select.appendChild(option);
-                        });
+        createForm_ADD(){
+                this.renderActionForm('ADD');
+        }
 
-                        return select;
-                }
-
-                if (tag === 'radio') {
-                        const group = document.createElement('div');
-                        group.className = 'radio-group';
-                        (html.options || []).forEach((optionValue, index) => {
-                                const wrapper = document.createElement('div');
-                                wrapper.className = 'radio-item';
-                                const input = document.createElement('input');
-                                input.type = 'radio';
-                                input.name = attributeName;
-                                input.id = index === 0 ? attributeName : `${attributeName}_${index}`;
-                                input.setAttribute('data-attribute-name', attributeName);
-                                input.value = optionValue;
-
-                                const label = document.createElement('label');
-                                label.htmlFor = input.id;
-                                label.className = `label_${optionValue}`;
-                                label.textContent = optionValue;
-
-                                wrapper.appendChild(input);
-                                wrapper.appendChild(label);
-                                group.appendChild(wrapper);
-                        });
-                        return group;
-                }
-
-                if (tag === 'checkbox') {
-                        const group = document.createElement('div');
-                        group.className = 'checkbox-group';
-                        const options = html.multiple ? html.options || [] : [definition.label || attributeName];
-
-                        options.forEach((optionValue, index) => {
-                                const wrapper = document.createElement('div');
-                                wrapper.className = 'checkbox-item';
-                                const input = document.createElement('input');
-                                input.type = 'checkbox';
-                                input.name = attributeName;
-                                input.id = index === 0 ? attributeName : `${attributeName}_${index}`;
-                                input.value = optionValue;
-                                input.setAttribute('data-attribute-name', attributeName);
-
-                                const label = document.createElement('label');
-                                label.htmlFor = input.id;
-                                label.className = `label_${optionValue}`;
-                                label.textContent = optionValue;
-
-                                wrapper.appendChild(input);
-                                wrapper.appendChild(label);
-                                group.appendChild(wrapper);
-                        });
-                        return group;
-                }
-
-                const input = document.createElement('input');
-                input.type = html.type || 'text';
-                input.id = attributeName;
-                input.name = attributeName;
-                input.className = inputClass;
-                if (html.component_visible_size) {
-                        input.size = html.component_visible_size;
-                }
-                input.setAttribute('data-attribute-name', attributeName);
-                return input;
+        createForm_SEARCH(){
+                this.renderActionForm('SEARCH');
         }
 
         SEARCH(formValues = null){
