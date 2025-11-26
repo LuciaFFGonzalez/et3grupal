@@ -1,7 +1,7 @@
 var textos_ES = {
 
 	// textos titulos generales
-        'text_titulo_app': 'Interfaz ET2 IU',
+        'text_titulo_app': 'Interfaz ET3 IU',
         'text_titulo_menu': 'Opciones  Menú',
         'text_titulo_pie': 'Pie de página',
     'label_seleccioncolumnas': 'Seleccionar columnas',

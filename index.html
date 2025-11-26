@@ -1,213 +1,184 @@
 <!DOCTYPE html>
 <html>
+	<head>
+		<!--
+				Guía rápida de arquitectura ET3 (recordatorio para el equipo):
+				- Base: mantiene el look&feel de la Semana 8 (HTML/CSS de referencia, estilos IU.css y ajustes mínimos comunes).
+				- Core: clases genéricas reutilizables (controlador principal de la app, creación de formularios/tablas, validaciones y acceso externo).
+				- app: definiciones concretas de entidades y sus estructuras/idiomas de ejemplo para instanciar la IU dinámica.
+				- iconos: recursos gráficos usados por los botones de acción, idiomas y navegación.
+				- locale: utilidades de cambio de idioma y textos comunes multiidioma.
+				- Test: harness de pruebas unitarias y de datos para validar generación de IU y reglas.
 
-<head>
-        <!--
-                Guía rápida de arquitectura ET3 (recordatorio para el equipo):
-                - Base: mantiene el look&feel de la Semana 8 (HTML/CSS de referencia, estilos IU.css y ajustes mínimos comunes).
-                - Core: clases genéricas reutilizables (controlador principal de la app, creación de formularios/tablas, validaciones y acceso externo).
-                - app: definiciones concretas de entidades y sus estructuras/idiomas de ejemplo para instanciar la IU dinámica.
-                - iconos: recursos gráficos usados por los botones de acción, idiomas y navegación.
-                - locale: utilidades de cambio de idioma y textos comunes multiidioma.
-                - Test: harness de pruebas unitarias y de datos para validar generación de IU y reglas.
+				Ficheros clave para ET3 (se crearán/rellenarán en siguientes iteraciones):
+				- Core/App_Class.js: clase general instanciada onload que orquesta selección de entidad y generación dinámica de la IU.
+				- Base/EntidadAbstracta.js: clase base oficial de entidades desde la que heredan las entidades específicas.
+				- Core/Dom_Class.js y Core/Dom_table_Class.js: construcción dinámica de formularios y tablas a partir de la estructura.
+				- Core/Validations_Class.js: único gestor de validaciones genéricas por campo/acción (incluyendo fechas).
+				- locale/idioma.js + app/Textos_*.js: gestión y recursos multiidioma en vivo.
+				- Base/css/IU.css: estilos comunes obligatorios para la IU ET3.
+				- API.html: documentación de la API de clases/métodos implementados.
+				- ET3_Datos_NombreEquipo.js: datos del equipo para pintarlos dinámicamente en index.
+		-->
+		<!-- meta y configuracion global-->
+		<meta charset="UTF-8">
+		<!-- css -->
+		<link rel="stylesheet" type="text/css" href="./Base/css/IU.css" media="screen" />
+		<link rel="stylesheet" type="text/css" href="./Base/css/estilo-1.css" media="screen" />
+		<link rel="stylesheet" type="text/css" href="./Base/css/estilo-2.css" media="screen" />
+		<link rel="stylesheet" type="text/css" href="./Base/css/estilo-tests.css" media="screen" />
+		<link rel="stylesheet" type="text/css" href="./app/css/IU.css" media="screen" />
+		<!-- clases generales -->
+		<script type="text/javascript" src="./Core/LanguageManager.js"></script>
+		<script type="text/javascript" src="./Core/App_Class.js"></script>
+		<script type="text/javascript" src="./Core/AbstractEntity.js"></script> <!-- No se usa en el flujo principal actualmente -->
+		<script type="text/javascript" src="./Core/GeneralUIManager.js"></script>
+		<!-- idioma -->
+		<script type="text/javascript" src="./locale/idioma.js"></script>
+		<script type="text/javascript" src="./app/Textos_ES.js"></script>
+		<script type="text/javascript" src="./app/Textos_EN.js"></script>
+		<script type="text/javascript" src="./app/Textos_Comunes.js"></script>
+		<script type="text/javascript" src="./Core/Validations_Class.js"></script>
+		<script type="text/javascript" src="./Core/DOMFormTableBuilder.js"></script>
+		<script type="text/javascript" src="./Core/ExternalAccess_class.js"></script>
+		<!-- clases dom -->
+		<script type="text/javascript" src="./Core/Dom_table_Class.js"></script>
+		<script type="text/javascript" src="./Core/Dom_Class.js"></script>
+		<script type="text/javascript" src="./Base/EntidadAbstracta.js"></script>
+		<script type="text/javascript" src="./app/entitiesConfig.js"></script>
+		<script type="text/javascript" src="./app/estructura_producto.js"></script>
+		<script type="text/javascript" src="./app/estructura_persona.js"></script>
+		<!-- clases entidades -->
+		<script type="text/javascript" src="./app/persona_Class.js"></script>
+		<!--<script type="text/javascript" src="./app/_Class.js"></script>
+		<script type="text/javascript" src="./app/_Class.js"></script>-->
+		<!-- clases de test -->
+		<script type="text/javascript" src="./Test/Unit/Unit_Test_Class.js"></script>
+		<script type="text/javascript" src="./Test/Data/Data_Test_Class.js"></script>
+		<!-- ficheros de testing-->
+		<script type="text/javascript" src="./app/ET2_persona_infotest.js"></script>
+		<script type="text/javascript" src="./ET3_Datos_NombreEquipo.js"></script>
+		<!-- este es el script que carga las librerias ajax que usamos para acceder al back -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
-                Ficheros clave para ET3 (se crearán/rellenarán en siguientes iteraciones):
-                - Core/App_Class.js: clase general instanciada onload que orquesta selección de entidad y generación dinámica de la IU.
-                - Base/EntidadAbstracta.js: clase base oficial de entidades desde la que heredan las entidades específicas.
-                - Core/Dom_Class.js y Core/Dom_table_Class.js: construcción dinámica de formularios y tablas a partir de la estructura.
-                - Core/Validations_Class.js: único gestor de validaciones genéricas por campo/acción (incluyendo fechas).
-                - locale/idioma.js + app/Textos_*.js: gestión y recursos multiidioma en vivo.
-                - Base/css/IU.css: estilos comunes obligatorios para la IU ET3.
-                - API.html: documentación de la API de clases/métodos implementados.
-                - ET3_Datos_NombreEquipo.js: datos del equipo para pintarlos dinámicamente en index.
-        -->
-        <!-- meta y configuracion global-->
-	<meta charset="UTF-8">
-        <!-- css -->
-        <link rel="stylesheet" type="text/css" href="./Base/css/IU.css" media="screen" />
-        <link rel="stylesheet" type="text/css" href="./Base/css/estilo-1.css" media="screen" />
-        <link rel="stylesheet" type="text/css" href="./Base/css/estilo-2.css" media="screen" />
-        <link rel="stylesheet" type="text/css" href="./Base/css/estilo-tests.css" media="screen" />
-        <link rel="stylesheet" type="text/css" href="./app/css/IU.css" media="screen" />
-        <!-- clases generales -->
-        <script type="text/javascript" src="./Core/LanguageManager.js"></script>
-        <script type="text/javascript" src="./Core/App_Class.js"></script>
-        <script type="text/javascript" src="./Core/AbstractEntity.js"></script> <!-- No se usa en el flujo principal actualmente -->
-        <script type="text/javascript" src="./Core/GeneralUIManager.js"></script>
-        <!-- idioma -->
-        <script type="text/javascript" src="./locale/idioma.js"></script>
-        <script type="text/javascript" src="./app/Textos_ES.js"></script>
-        <script type="text/javascript" src="./app/Textos_EN.js"></script>
-        <script type="text/javascript" src="./app/Textos_Comunes.js"></script>
-        <script type="text/javascript" src="./Core/Validations_Class.js"></script>
-        <script type="text/javascript" src="./Core/DOMFormTableBuilder.js"></script>
-        <script type="text/javascript" src="./Core/ExternalAccess_class.js"></script>
-        <!-- clases dom -->
-        <script type="text/javascript" src="./Core/Dom_table_Class.js"></script>
-        <script type="text/javascript" src="./Core/Dom_Class.js"></script>
-        <script type="text/javascript" src="./Base/EntidadAbstracta.js"></script>
-        <script type="text/javascript" src="./app/entitiesConfig.js"></script>
-        <script type="text/javascript" src="./app/estructura_producto.js"></script>
-        <script type="text/javascript" src="./app/estructura_persona.js"></script>
-        <!-- clases entidades -->
-        <script type="text/javascript" src="./app/persona_Class.js"></script>
-        <!--<script type="text/javascript" src="./app/_Class.js"></script>
-        <script type="text/javascript" src="./app/_Class.js"></script>-->
-        <!-- clases de test -->
-        <script type="text/javascript" src="./Test/Unit/Unit_Test_Class.js"></script>
-        <script type="text/javascript" src="./Test/Data/Data_Test_Class.js"></script>
-        <!-- ficheros de testing-->
-        <script type="text/javascript" src="./app/ET2_persona_infotest.js"></script>
-        <script type="text/javascript" src="./ET3_Datos_NombreEquipo.js"></script>
-        <!-- este es el script que carga las librerias ajax que usamos para acceder al back -->
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-
-
-</head>
-
-<body onload="initPage();">
-
-        <header id='header_page' class='bordeado'>
-                <span class='text_titulo_app'></span>
-                <img src="./iconos/Spain.png" onclick="changeLanguage('ES');" />
-        <img src="./iconos/United-Kingdom.png" onclick="changeLanguage('EN');" />
-        <a id="api-doc-link" class="api-link text_api_link_label" href="./API.html" title="">API</a>
-        </header>
-        <nav class='bordeado'><span class = 'text_titulo_menu' onclick="menu_work();"></span>
-        </nav>
-        <!-- El menú dinámico de entidades se integrará en este contenedor. -->
-        <aside id='div-menu'>
-                <ol id="entity-menu-list"></ol>
-        </aside>
-        <section id="IU_manage_entity">
-                <section id="IU_manage_head">
-                        <div id='title_page' class='bordeado'><span id = "text_title_page"></span>
-                        </div>
-                        <div id="add_search_columns">
-                        <img id="botonADD" src="./iconos/ADD.png" onclick="uiManager.refreshAddView();" />
-                        <img id="botonSEARCH" src="./iconos/SEARCH.png" onclick="uiManager.refreshSearchView();"/>
-								
-				<label id="label_seleccioncolumnas" class ="label_seleccioncolumnas"></label>
-				<select id="seleccioncolumnas" multiple>
-				</select>
-				
-                                <img id="botonTEST_UNIT" src="./iconos/TEST_UNIT.png" onclick="test = new Unit_Test(entidad?.nombreentidad || uiManager.currentEntity?.nombreentidad)"/>
-                                <img id="botonTEST_DATA" src="./iconos/TEST.png" onclick="test = new Data_Test(eval(entidad?.nombreentidad || uiManager.currentEntity?.nombreentidad))"/>
-
-        	</div>
+	</head>
+	<body onload="initPage();">
+		<header id='header_page' class='bordeado'>
+			<span class='text_titulo_app'></span>
+			<img src="./iconos/Spain.png" onclick="changeLanguage('ES');" />
+			<img src="./iconos/United-Kingdom.png" onclick="changeLanguage('EN');" />
+			<a id="api-doc-link" class="api-link text_api_link_label" href="./API.html" title="">API</a>
+		</header>
+		<nav class='bordeado'><span class = 'text_titulo_menu' onclick="menu_work();"></span></nav>
+		<!-- El menú dinámico de entidades se integrará en este contenedor. -->
+		<aside id='div-menu'>
+			<ol id="entity-menu-list"></ol>
+		</aside>
+		<section id="IU_manage_entity">
+			<section id="IU_manage_head">
+				<div id='title_page' class='bordeado'><span id = "text_title_page"></span></div>
+				<div id="add_search_columns">
+					<img id="botonADD" src="./iconos/ADD.png" onclick="uiManager.refreshAddView();" />
+					<img id="botonSEARCH" src="./iconos/SEARCH.png" onclick="uiManager.refreshSearchView();"/>
+					<label id="label_seleccioncolumnas" class ="label_seleccioncolumnas"></label>
+					<select id="seleccioncolumnas" multiple></select>
+					<img id="botonTEST_UNIT" src="./iconos/TEST_UNIT.png" onclick="test = new Unit_Test(entidad?.nombreentidad || uiManager.currentEntity?.nombreentidad)"/>
+					<img id="botonTEST_DATA" src="./iconos/TEST.png" onclick="test = new Data_Test(eval(entidad?.nombreentidad || uiManager.currentEntity?.nombreentidad))"/>
+				</div>
+			</section>
+			<section id="IU_manage_table"></section>
 		</section>
-
-                <section id="IU_manage_table">
-
-                </section>
-
-        </section>
-        <!-- La zona dinámica de formularios y tablas se generará automáticamente en esta sección. -->
-        <section id="Div_IU_form" class='div_IU_form bordeado'>
-                <div class = "contenidoForm" id="contenidoForm">
-                        <div class = "class_titulo_form">
-                                <span id="class_contenido_titulo_form"></span>
-                        </div>
-		<div id="contenedor_IU_form">
-			
+		<!-- La zona dinámica de formularios y tablas se generará automáticamente en esta sección. -->
+		<section id="Div_IU_form" class='div_IU_form bordeado'>
+			<div class = "contenidoForm" id="contenidoForm">
+				<div class = "class_titulo_form">
+					<span id="class_contenido_titulo_form"></span>
+				</div>
+				<div id="contenedor_IU_form"></div>
+				<br>
+				<img src="./iconos/BACK.png" onclick="entidad.dom.hide_element('Div_IU_form');" />
+			</div>
+		</section>
+		<section id="Div_IU_Test" class='div_IU_form bordeado'></section>
+		<section id="IU_Test_result" class='bordeado contenidoTest'>
+			<section id="IU_Test_result_nofile" class="'bordeado "></section>
+			<section id="IU_Test_result_file" class="'bordeado"></section>
+		</section>
+		<article class='bordeado'><span class="text_article_section"></span></article>
+		<section id="team-data-section" class='bordeado'>
+			<h2 class="text_team_data_title"></h2>
+			<div id="team-data-content"></div>
+		</section>
+		<footer class='bordeado'><span class="text_titulo_pie"></span></footer>
+		
+		<!-- Overlay para acompañar el modal -->
+		<div id="modal_action_overlay"></div>
+		
+		<!-- Modal para mostrar los errores de accion -->
+		<div id="error_action_modal">
+			<span id="error_action_msg"></span>
+			<!--<img src="./iconos/BACK.png" onclick="cerrarModalError();" />-->
+			<button onclick="entidad.dom.cerrarModalError()">X</button>
 		</div>
-			<br>
-			<img src="./iconos/BACK.png" onclick="entidad.dom.hide_element('Div_IU_form');" />
-		</div>
-	</section>
+		
+		<script type="text/javascript">
+			function initPage(){
+				window['persona'] = persona;
+				window.nombreClaseEntidad = 'persona';
+				window.generalUIManager = new GeneralUIManager('ES');
+				window.uiManager = new UIManager({ validationManager: new Validations(), languageManager: generalUIManager.languageManager });
+				generalUIManager.hideInitialSections();
+				generalUIManager.initDefaultLanguage();
+				generalUIManager.renderTeamData('team-data-content');
+				applyStaticTranslations();
+				renderEntityMenu();
+			}
 
-	<section id="Div_IU_Test" class='div_IU_form bordeado'></section>
+			function changeLanguage(lang) {
+				if (window.generalUIManager?.languageManager?.setLang) {
+					window.generalUIManager.languageManager.setLang(lang);
+				} else if (typeof setLang === 'function') {
+					setLang(lang);
+				}
+			}
 
-	<section id="IU_Test_result" class='bordeado contenidoTest'>
-	
-		<section id="IU_Test_result_nofile" class="'bordeado ">
+			function applyStaticTranslations() {
+				const apiLink = document.getElementById('api-doc-link');
+				const langManager = window.generalUIManager?.languageManager;
 
-		</section>
-		<section id="IU_Test_result_file" class="'bordeado">
-			
-		</section>
-	</section>
+				if (apiLink && langManager?.registerTranslationElement) {
+					langManager.registerTranslationElement(apiLink, 'text_api_link_label', 'API');
+					langManager.registerTranslationElement(apiLink, 'text_api_link_title', 'Documentación API', 'title');
+				}
+			}
 
-        <article class='bordeado'><span class="text_article_section"></span></article>
+			function renderEntityMenu() {
+				const menuList = document.getElementById('entity-menu-list');
+				if (!menuList) return;
 
-        <section id="team-data-section" class='bordeado'>
-                <h2 class="text_team_data_title"></h2>
-                <div id="team-data-content"></div>
-        </section>
+				menuList.innerHTML = '';
+				const entities = Array.isArray(window.entitiesConfig) ? window.entitiesConfig : [];
 
-        <footer class='bordeado'><span class="text_titulo_pie"></span></footer>
+				entities.forEach((entityName) => {
+					const listItem = document.createElement('li');
+					listItem.className = 'opcionmenu';
 
-	<!-- Overlay para acompañar el modal -->
-	<div id="modal_action_overlay"></div>
+					const trigger = document.createElement('span');
+					const labelKey = `text_menu_${entityName}`;
+					trigger.className = `${labelKey}`;
+					trigger.onclick = () => window.uiManager?.loadEntity(entityName);
 
-	<!-- Modal para mostrar los errores de accion -->
-	<div id="error_action_modal">
-		<span id="error_action_msg"></span>
-		<!--<img src="./iconos/BACK.png" onclick="cerrarModalError();" />-->
-		<button onclick="entidad.dom.cerrarModalError()">X</button>
-	</div>
+					const resolvedText = window.generalUIManager?.languageManager?.getText?.(labelKey) || entityName;
+					trigger.textContent = resolvedText;
 
-        <script type="text/javascript">
-                function initPage(){
-                        window['persona'] = persona;
-                        window.nombreClaseEntidad = 'persona';
-                        window.generalUIManager = new GeneralUIManager('ES');
-                        window.uiManager = new UIManager({ validationManager: new Validations(), languageManager: generalUIManager.languageManager });
-                        generalUIManager.hideInitialSections();
-                        generalUIManager.initDefaultLanguage();
-                        generalUIManager.renderTeamData('team-data-content');
-                        applyStaticTranslations();
-                        renderEntityMenu();
-                }
+					if (window.generalUIManager?.languageManager?.registerTranslationElement) {
+						window.generalUIManager.languageManager.registerTranslationElement(trigger, labelKey, resolvedText);
+					}
 
-                function changeLanguage(lang) {
-                        if (window.generalUIManager?.languageManager?.setLang) {
-                                window.generalUIManager.languageManager.setLang(lang);
-                        } else if (typeof setLang === 'function') {
-                                setLang(lang);
-                        }
-                }
-
-                function applyStaticTranslations() {
-                        const apiLink = document.getElementById('api-doc-link');
-                        const langManager = window.generalUIManager?.languageManager;
-
-                        if (apiLink && langManager?.registerTranslationElement) {
-                                langManager.registerTranslationElement(apiLink, 'text_api_link_label', 'API');
-                                langManager.registerTranslationElement(apiLink, 'text_api_link_title', 'Documentación API', 'title');
-                        }
-                }
-
-                function renderEntityMenu() {
-                        const menuList = document.getElementById('entity-menu-list');
-                        if (!menuList) return;
-
-                        menuList.innerHTML = '';
-                        const entities = Array.isArray(window.entitiesConfig) ? window.entitiesConfig : [];
-
-                        entities.forEach((entityName) => {
-                                const listItem = document.createElement('li');
-                                listItem.className = 'opcionmenu';
-
-                                const trigger = document.createElement('span');
-                                const labelKey = `text_menu_${entityName}`;
-                                trigger.className = `${labelKey}`;
-                                trigger.onclick = () => window.uiManager?.loadEntity(entityName);
-
-                                const resolvedText = window.generalUIManager?.languageManager?.getText?.(labelKey) || entityName;
-                                trigger.textContent = resolvedText;
-
-                                if (window.generalUIManager?.languageManager?.registerTranslationElement) {
-                                        window.generalUIManager.languageManager.registerTranslationElement(trigger, labelKey, resolvedText);
-                                }
-
-                                listItem.appendChild(trigger);
-                                menuList.appendChild(listItem);
-                        });
-                }
-        </script>
-
-</body>
-
-
+					listItem.appendChild(trigger);
+					menuList.appendChild(listItem);
+				});
+			}
+		</script>
+	</body>
 </html>
