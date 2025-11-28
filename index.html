@@ -67,7 +67,7 @@
 			<span class='text_titulo_app'></span>
 			<img src="./iconos/Spain.png" onclick="changeLanguage('ES');" />
 			<img src="./iconos/United-Kingdom.png" onclick="changeLanguage('EN');" />
-			<a id="api-doc-link" class="api-link text_api_link_label" href="./API.html" title="">API</a>
+			<a id="api-doc-link" href="./API.html"> <img src="./iconos/API.png" /></a>
 		</header>
 		<nav class='bordeado'><span class = 'text_titulo_menu' onclick="menu_work();"></span></nav>
 		<!-- El menú dinámico de entidades se integrará en este contenedor. -->
@@ -147,8 +147,7 @@
 				const langManager = window.generalUIManager?.languageManager;
 
 				if (apiLink && langManager?.registerTranslationElement) {
-					langManager.registerTranslationElement(apiLink, 'text_api_link_label', 'API');
-					langManager.registerTranslationElement(apiLink, 'text_api_link_title', 'Documentación API', 'title');
+					langManager.registerTranslationElement(apiLink, 'text_api_link_title', 'Documentación API', 'title'); // es una imagen, por lo tanto, estará aquí
 				}
 			}
 
