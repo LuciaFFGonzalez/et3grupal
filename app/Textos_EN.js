@@ -163,6 +163,12 @@ var textos_EN = {
     'form.persona.genero_persona.option.Masculino': 'Male',
     'form.persona.genero_persona.option.Femenino': 'Female',
     'form.persona.genero_persona.option.Otro': 'Other',
+    'form.persona.habilidades_persona.option.JavaScript': 'JavaScript',
+    'form.persona.habilidades_persona.option.Python': 'Python',
+    'form.persona.habilidades_persona.option.DevOps': 'DevOps',
+    'form.persona.habilidades_persona.option.Ciberseguridad': 'Cybersecurity',
+    'habilidades_persona': 'Key skills',
+    'acepta_privacidad': 'I accept the privacy policy',
 
     // errores personalizados faltantes
     'dni_validate_KO': 'The ID number is not valid.',

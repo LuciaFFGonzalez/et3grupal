@@ -162,6 +162,12 @@ var textos_ES = {
     'form.persona.genero_persona.option.Masculino': 'Masculino',
     'form.persona.genero_persona.option.Femenino': 'Femenino',
     'form.persona.genero_persona.option.Otro': 'Otro',
+    'form.persona.habilidades_persona.option.JavaScript': 'JavaScript',
+    'form.persona.habilidades_persona.option.Python': 'Python',
+    'form.persona.habilidades_persona.option.DevOps': 'DevOps',
+    'form.persona.habilidades_persona.option.Ciberseguridad': 'Ciberseguridad',
+    'habilidades_persona': 'Habilidades destacadas',
+    'acepta_privacidad': 'Acepto la política de privacidad',
 
     // errores personalizados faltantes
     'dni_validate_KO': 'El DNI no es válido.',

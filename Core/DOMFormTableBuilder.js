@@ -259,10 +259,6 @@ class DOMFormTableBuilder {
             element.disabled = true;
         }
 
-        if (tag === 'radio' || tag === 'checkbox') {
-            element.setAttribute('data-attribute-name', name);
-        }
-
         return element;
     }
 

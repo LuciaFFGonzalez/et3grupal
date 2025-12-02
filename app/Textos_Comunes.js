@@ -7,7 +7,8 @@ var textos_comunes = {
         ERR_NO_FILE: 'Debe seleccionar un fichero',
         ERR_MAX_SIZE_FILE: 'El fichero supera el tamaño máximo permitido',
         ERR_TYPE_FILE: 'Tipo de fichero no permitido',
-        ERR_FORMAT_NAME_FILE: 'Nombre de fichero con formato inválido'
+        ERR_FORMAT_NAME_FILE: 'Nombre de fichero con formato inválido',
+        ERR_REQUIRED: 'El campo es obligatorio'
     },
     EN: {
         ERR_MIN_SIZE: 'Minimum length not reached',
@@ -17,6 +18,7 @@ var textos_comunes = {
         ERR_NO_FILE: 'A file selection is required',
         ERR_MAX_SIZE_FILE: 'The file exceeds the maximum allowed size',
         ERR_TYPE_FILE: 'File type is not allowed',
-        ERR_FORMAT_NAME_FILE: 'File name format is invalid'
+        ERR_FORMAT_NAME_FILE: 'File name format is invalid',
+        ERR_REQUIRED: 'This field is required'
     }
 };

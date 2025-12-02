@@ -32,9 +32,11 @@ class persona extends EntidadAbstracta{
                                 email_persona: 'ada@example.com',
                                 titulacion_persona: 'MIA',
                                 menu_persona: ['Vegano'],
+                                habilidades_persona: ['JavaScript', 'DevOps'],
                                 genero_persona: 'Femenino',
                                 foto_persona: 'ada.png',
                                 nuevo_foto_persona: '',
+                                acepta_privacidad: ['acepta_privacidad'],
                         },
                         {
                                 dni: '12345678Z',
@@ -46,9 +48,11 @@ class persona extends EntidadAbstracta{
                                 email_persona: 'grace@example.com',
                                 titulacion_persona: 'GREI',
                                 menu_persona: ['Celiaco'],
+                                habilidades_persona: ['Python', 'Ciberseguridad'],
                                 genero_persona: 'Femenino',
                                 foto_persona: 'grace.jpg',
                                 nuevo_foto_persona: '',
+                                acepta_privacidad: ['acepta_privacidad'],
                         },
                         {
                                 dni: '87654321X',
@@ -60,9 +64,11 @@ class persona extends EntidadAbstracta{
                                 email_persona: 'alan@example.com',
                                 titulacion_persona: 'MEI',
                                 menu_persona: ['Vegano', 'Celiaco'],
+                                habilidades_persona: ['Python', 'DevOps'],
                                 genero_persona: 'Masculino',
                                 foto_persona: 'alan.jpg',
                                 nuevo_foto_persona: '',
+                                acepta_privacidad: ['acepta_privacidad'],
                         },
                         {
                                 dni: '24681357Y',
@@ -74,9 +80,11 @@ class persona extends EntidadAbstracta{
                                 email_persona: 'linus@example.com',
                                 titulacion_persona: 'GRIA',
                                 menu_persona: ['AlergiaMarisco'],
+                                habilidades_persona: ['JavaScript', 'Ciberseguridad'],
                                 genero_persona: 'Masculino',
                                 foto_persona: 'linus.png',
                                 nuevo_foto_persona: '',
+                                acepta_privacidad: ['acepta_privacidad'],
                         },
                         {
                                 dni: '13572468W',
@@ -88,9 +96,11 @@ class persona extends EntidadAbstracta{
                                 email_persona: 'katherine@example.com',
                                 titulacion_persona: 'PCEO',
                                 menu_persona: ['Vegano'],
+                                habilidades_persona: ['Python', 'Ciberseguridad', 'DevOps'],
                                 genero_persona: 'Femenino',
                                 foto_persona: 'katherine.jpg',
                                 nuevo_foto_persona: '',
+                                acepta_privacidad: ['acepta_privacidad'],
                         }
                 ];
 

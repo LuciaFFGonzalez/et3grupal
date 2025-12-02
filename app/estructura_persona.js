@@ -149,6 +149,21 @@ const estructura_persona = {
                 },
             },
         },
+        habilidades_persona: {
+            label: 'habilidades_persona',
+            html: {
+                tag: 'select',
+                multiple: true,
+                options: ['JavaScript', 'Python', 'DevOps', 'Ciberseguridad'],
+            },
+            rules: {
+                validations: {
+                    ADD: { min_size: 1, max_size: 3 },
+                    EDIT: { min_size: 1, max_size: 3 },
+                    SEARCH: { max_size: 4 },
+                },
+            },
+        },
         genero_persona: {
             label: 'genero_persona',
             html: {
@@ -159,6 +174,20 @@ const estructura_persona = {
                 validations: {
                     ADD: { exp_reg: '^(Masculino|Femenino|Otro)$' },
                     EDIT: { exp_reg: '^(Masculino|Femenino|Otro)$' },
+                    SEARCH: {},
+                },
+            },
+        },
+        acepta_privacidad: {
+            label: 'acepta_privacidad',
+            html: {
+                tag: 'checkbox',
+                multiple: false,
+            },
+            rules: {
+                validations: {
+                    ADD: { required: true },
+                    EDIT: { required: true },
                     SEARCH: {},
                 },
             },

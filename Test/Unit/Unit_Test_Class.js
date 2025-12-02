@@ -199,6 +199,46 @@ class Unit_Test {
                 expectedErrors: [],
                 expectValid: true,
             },
+            {
+                caso: 'Select múltiple sin elementos',
+                attribute: 'habilidades_persona',
+                action: 'ADD',
+                value: [],
+                expectedErrors: ['ERR_MIN_SIZE'],
+                expectValid: false,
+            },
+            {
+                caso: 'Select múltiple con exceso de elementos',
+                attribute: 'habilidades_persona',
+                action: 'ADD',
+                value: ['JavaScript', 'Python', 'DevOps', 'Ciberseguridad'],
+                expectedErrors: ['ERR_MAX_SIZE'],
+                expectValid: false,
+            },
+            {
+                caso: 'Select múltiple válido',
+                attribute: 'habilidades_persona',
+                action: 'ADD',
+                value: ['JavaScript', 'Python'],
+                expectedErrors: [],
+                expectValid: true,
+            },
+            {
+                caso: 'Checkbox requerido sin marcarse',
+                attribute: 'acepta_privacidad',
+                action: 'ADD',
+                value: [],
+                expectedErrors: ['ERR_REQUIRED'],
+                expectValid: false,
+            },
+            {
+                caso: 'Checkbox requerido marcado',
+                attribute: 'acepta_privacidad',
+                action: 'ADD',
+                value: ['acepta_privacidad'],
+                expectedErrors: [],
+                expectValid: true,
+            },
         ];
 
         casos.forEach((caso) => {

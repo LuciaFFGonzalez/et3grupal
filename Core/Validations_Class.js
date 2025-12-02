@@ -133,22 +133,28 @@ class Validations{
          */
         validateValueAgainstRules(value, rulesForAction, { attributeName = '', action = '', entityInstance = null } = {}) {
                 const errorCodes = [];
+                const length = this.getLength(value);
+
+                if (rulesForAction?.required) {
+                        const isEmpty = this.isEmptyValue(value);
+                        if (isEmpty) {
+                                errorCodes.push('ERR_REQUIRED');
+                        }
+                }
 
                 if (rulesForAction?.min_size !== undefined) {
-                        const length = value?.length ?? 0;
                         if (length < rulesForAction.min_size) {
                                 errorCodes.push('ERR_MIN_SIZE');
                         }
                 }
 
                 if (rulesForAction?.max_size !== undefined) {
-                        const length = value?.length ?? 0;
                         if (length > rulesForAction.max_size) {
                                 errorCodes.push('ERR_MAX_SIZE');
                         }
                 }
 
-                if (rulesForAction?.exp_reg !== undefined) {
+                if (rulesForAction?.exp_reg !== undefined && !Array.isArray(value)) {
                         const regex = new RegExp(rulesForAction.exp_reg);
                         const valueToTest = typeof value === 'string' ? value : value?.name ?? '';
                         if (!regex.test(valueToTest)) {
@@ -207,6 +213,22 @@ class Validations{
 
                 const isValid = errorCodes.length === 0;
                 return { isValid, errorCodes };
+        }
+
+        getLength(value) {
+                if (Array.isArray(value)) return value.length;
+                if (typeof value === 'string') return value.length;
+                if (value && typeof value.length === 'number') return value.length;
+                return 0;
+        }
+
+        isEmptyValue(value) {
+                if (value === null || value === undefined) return true;
+                if (Array.isArray(value)) return value.length === 0;
+                if (typeof value === 'string') return value.trim().length === 0;
+                if (typeof value === 'boolean') return value === false;
+                if (value && typeof value.size === 'number') return false;
+                return false;
         }
 
         // validateFieldFromStructure(entityStructure, attributeName, action, formElement) {
