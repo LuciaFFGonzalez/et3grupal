@@ -38,15 +38,18 @@ class EntidadAbstracta{
 			fillform(this.manual_form_creation(),'form_iu');
 		}
 		else{
-			if (eval(this.cargar_formulario_dinamico)){
-				fillform(this.cargar_formulario_dinamico(),'form_iu');
-			}
-			else{
-				alert('no existe formulario');
-			}
-		}
+                        if (eval(this.cargar_formulario_dinamico)){
+                                fillform(this.cargar_formulario_dinamico(),'form_iu');
+                        }
+                        else{
+                                const langManager = window?.generalUIManager?.languageManager;
+                                const message = langManager?.getText?.('error.form.not.found')
+                                        || 'No se ha encontrado un formulario para la entidad.';
+                                alert(message);
+                        }
+                }
 
-	}
+        }
 
 	/**
 	 * el método realiza una petición de search al back pudiendo enviar un formulario con datos, enviando 

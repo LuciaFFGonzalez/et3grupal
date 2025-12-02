@@ -8,7 +8,18 @@ var textos_comunes = {
         ERR_MAX_SIZE_FILE: 'El fichero supera el tamaño máximo permitido',
         ERR_TYPE_FILE: 'Tipo de fichero no permitido',
         ERR_FORMAT_NAME_FILE: 'Nombre de fichero con formato inválido',
-        ERR_REQUIRED: 'El campo es obligatorio'
+        ERR_REQUIRED: 'El campo es obligatorio',
+        ERR_PERSONALIZED: 'Validación personalizada no superada',
+        'ERR_MIN_SIZE-ES': 'Tamaño mínimo no alcanzado',
+        'ERR_MAX_SIZE-ES': 'Tamaño máximo superado',
+        'ERR_INVALID_FORMAT-ES': 'Formato inválido',
+        'ERR_EXP_REG-ES': 'Formato inválido',
+        'ERR_NO_FILE-ES': 'Debe seleccionar un fichero',
+        'ERR_MAX_SIZE_FILE-ES': 'El fichero supera el tamaño máximo permitido',
+        'ERR_TYPE_FILE-ES': 'Tipo de fichero no permitido',
+        'ERR_FORMAT_NAME_FILE-ES': 'Nombre de fichero con formato inválido',
+        'ERR_REQUIRED-ES': 'El campo es obligatorio',
+        'ERR_PERSONALIZED-ES': 'Validación personalizada no superada'
     },
     EN: {
         ERR_MIN_SIZE: 'Minimum length not reached',
@@ -19,6 +30,17 @@ var textos_comunes = {
         ERR_MAX_SIZE_FILE: 'The file exceeds the maximum allowed size',
         ERR_TYPE_FILE: 'File type is not allowed',
         ERR_FORMAT_NAME_FILE: 'File name format is invalid',
-        ERR_REQUIRED: 'This field is required'
+        ERR_REQUIRED: 'This field is required',
+        ERR_PERSONALIZED: 'Custom validation failed',
+        'ERR_MIN_SIZE-EN': 'Minimum length not reached',
+        'ERR_MAX_SIZE-EN': 'Maximum length exceeded',
+        'ERR_INVALID_FORMAT-EN': 'Invalid format',
+        'ERR_EXP_REG-EN': 'Invalid format',
+        'ERR_NO_FILE-EN': 'A file selection is required',
+        'ERR_MAX_SIZE_FILE-EN': 'The file exceeds the maximum allowed size',
+        'ERR_TYPE_FILE-EN': 'File type is not allowed',
+        'ERR_FORMAT_NAME_FILE-EN': 'File name format is invalid',
+        'ERR_REQUIRED-EN': 'This field is required',
+        'ERR_PERSONALIZED-EN': 'Custom validation failed'
     }
 };

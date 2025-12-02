@@ -102,32 +102,78 @@ class LanguageManager {
 
     getErrorMessage(errorCode) {
         if (!errorCode) return '';
+
         const lang = this.getActiveLanguage();
+        const localizedCode = this.buildLocalizedErrorCode(errorCode, lang);
+        const baseCode = this.stripLanguageSuffix(errorCode);
         const activeErrors = (this.errorMessages && this.errorMessages[lang]) || {};
         const defaultErrors = (this.errorMessages && this.errorMessages[this.defaultLanguage]) || {};
 
-        if (Object.prototype.hasOwnProperty.call(activeErrors, errorCode)) {
-            return activeErrors[errorCode];
-        }
-        if (Object.prototype.hasOwnProperty.call(defaultErrors, errorCode)) {
-            return defaultErrors[errorCode];
+        const resolvedMessage = this.resolveErrorDictionaryMessage(
+            localizedCode,
+            baseCode,
+            activeErrors,
+            defaultErrors
+        ) || this.resolveErrorFromTranslations(localizedCode, baseCode, lang);
+
+        if (resolvedMessage) {
+            return `${localizedCode}: ${resolvedMessage}`;
         }
 
-        const fallbackFromTexts = this.getText(errorCode);
-        if (fallbackFromTexts && fallbackFromTexts !== errorCode) {
-            return fallbackFromTexts;
-        }
-
-        return `${errorCode}-${lang}`;
+        return localizedCode;
     }
 
     formatErrorMessage(errorCode, langCode = null) {
         if (!errorCode) return '';
 
         const lang = langCode || this.getActiveLanguage();
-        const translation = this.getText(errorCode);
-        const resolvedMessage = translation && translation !== errorCode ? translation : errorCode;
+        const localizedCode = this.buildLocalizedErrorCode(errorCode, lang);
+        const translation = this.getText(localizedCode) || this.getText(errorCode);
+        const resolvedMessage = translation && translation !== localizedCode && translation !== errorCode
+            ? translation
+            : errorCode;
 
-        return `${errorCode}-${lang}: ${resolvedMessage}`;
+        return `${localizedCode}: ${resolvedMessage}`;
+    }
+
+    buildLocalizedErrorCode(errorCode, langCode = null) {
+        const lang = (langCode || this.getActiveLanguage() || this.defaultLanguage || 'ES').toUpperCase();
+        const baseCode = this.stripLanguageSuffix(errorCode);
+        return `${baseCode}-${lang}`;
+    }
+
+    stripLanguageSuffix(errorCode) {
+        if (!errorCode) return '';
+        const match = `${errorCode}`.match(/^(.*?)(-[A-Za-z]{2})$/);
+        return match ? match[1] : `${errorCode}`;
+    }
+
+    resolveErrorDictionaryMessage(localizedCode, baseCode, activeErrors, defaultErrors) {
+        if (Object.prototype.hasOwnProperty.call(activeErrors, localizedCode)) {
+            return activeErrors[localizedCode];
+        }
+        if (Object.prototype.hasOwnProperty.call(activeErrors, baseCode)) {
+            return activeErrors[baseCode];
+        }
+        if (Object.prototype.hasOwnProperty.call(defaultErrors, localizedCode)) {
+            return defaultErrors[localizedCode];
+        }
+        if (Object.prototype.hasOwnProperty.call(defaultErrors, baseCode)) {
+            return defaultErrors[baseCode];
+        }
+        return '';
+    }
+
+    resolveErrorFromTranslations(localizedCode, baseCode, lang) {
+        const translationFromTexts = this.getText(localizedCode, lang);
+        if (translationFromTexts && translationFromTexts !== localizedCode) {
+            return translationFromTexts;
+        }
+
+        const fallbackFromBase = this.getText(baseCode, lang);
+        if (fallbackFromBase && fallbackFromBase !== baseCode) {
+            return fallbackFromBase;
+        }
+        return '';
     }
 }

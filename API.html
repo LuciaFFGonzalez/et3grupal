@@ -63,18 +63,46 @@
 <body>
     <div class="api-wrapper">
         <header class="api-header">
-            <h1>Documentación de la API</h1>
-            <a class="api-home-link bordeado" href="./index.html">← Volver a la aplicación</a>
+            <h1 class="api.header.title"></h1>
+            <a class="api-home-link bordeado" href="./index.html"></a>
         </header>
-        <p>Listado generado dinámicamente a partir de las clases principales de la entrega ET3.</p>
+        <p class="api-description"></p>
         <section id="api-docs-container"></section>
     </div>
 
+    <script type="text/javascript" src="./locale/idioma.js"></script>
+    <script type="text/javascript" src="./app/Textos_ES.js"></script>
+    <script type="text/javascript" src="./app/Textos_EN.js"></script>
+    <script type="text/javascript" src="./app/Textos_Comunes.js"></script>
+    <script type="text/javascript" src="./Core/LanguageManager.js"></script>
     <script type="text/javascript" src="./app/apiDocData.js"></script>
     <script type="text/javascript">
+        const apiLanguageManager = new LanguageManager({ defaultLanguage: 'ES' });
+        const apiActiveLang = (typeof getCookie === 'function' && getCookie('lang')) || 'ES';
+        apiLanguageManager.setLanguage(apiActiveLang);
+
+        function translateStaticApiTexts() {
+            const headerTitle = document.querySelector('.api-header h1');
+            if (headerTitle) {
+                headerTitle.textContent = apiLanguageManager.getText('api.header.title');
+            }
+
+            const homeLink = document.querySelector('.api-home-link');
+            if (homeLink) {
+                homeLink.textContent = apiLanguageManager.getText('api.header.back');
+            }
+
+            const description = document.querySelector('.api-description');
+            if (description) {
+                description.textContent = apiLanguageManager.getText('api.description');
+            }
+
+            document.title = apiLanguageManager.getText('api.header.title') || document.title;
+        }
+
         function buildParamsText(params) {
             if (!Array.isArray(params) || params.length === 0) {
-                return 'Sin parámetros';
+                return apiLanguageManager.getText('api.no.params');
             }
             return params.map((param) => {
                 const description = param.description ? `: ${param.description}` : '';
@@ -87,7 +115,7 @@
             if (!container) return;
 
             if (!Array.isArray(data) || data.length === 0) {
-                container.innerHTML = '<p class="api-empty bordeado">No hay información de API disponible.</p>';
+                container.innerHTML = `<p class="api-empty bordeado">${apiLanguageManager.getText('api.empty')}</p>`;
                 return;
             }
 
@@ -114,7 +142,12 @@
 
                 const thead = document.createElement('thead');
                 const headerRow = document.createElement('tr');
-                ['Método', 'Parámetros', 'Devuelve', 'Descripción'].forEach((label) => {
+                [
+                    apiLanguageManager.getText('api.table.header.method'),
+                    apiLanguageManager.getText('api.table.header.params'),
+                    apiLanguageManager.getText('api.table.header.return'),
+                    apiLanguageManager.getText('api.table.header.description')
+                ].forEach((label) => {
                     const th = document.createElement('th');
                     th.textContent = label;
                     headerRow.appendChild(th);
@@ -152,6 +185,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
+            translateStaticApiTexts();
             renderApiDocs(window.apiDocData || []);
         });
     </script>

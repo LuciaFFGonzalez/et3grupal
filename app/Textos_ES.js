@@ -9,6 +9,15 @@ var textos_ES = {
     'text_team_data_title': 'Datos del equipo',
     'text_api_link_label': 'API',
     'text_api_link_title': 'Documentación API',
+    'api.header.title': 'Documentación de la API',
+    'api.header.back': '← Volver a la aplicación',
+    'api.description': 'Listado generado dinámicamente a partir de las clases principales de la entrega ET3.',
+    'api.no.params': 'Sin parámetros',
+    'api.empty': 'No hay información de API disponible.',
+    'api.table.header.method': 'Método',
+    'api.table.header.params': 'Parámetros',
+    'api.table.header.return': 'Devuelve',
+    'api.table.header.description': 'Descripción',
 
     // textos de test
     /*'res_estructura_tests':'Tabla verificacion estructura de test',
@@ -23,6 +32,8 @@ var textos_ES = {
         'text_menu_persona': 'Gestionar persona',
         'text_menu_gestionar_persona': 'Gestionar persona',
         'text_menu_producto': 'Gestionar producto',
+    'text_entity_persona': 'Persona',
+    'text_entity_producto': 'Producto',
 
     // textos entidad persona
         'text_titulo_page_persona' : 'Gestión de Datos Personales',
@@ -60,6 +71,12 @@ var textos_ES = {
         'label_Masculino': 'Masculino',
         'label_Femenino': 'Femenino',
         'label_Otro': 'Otro',
+
+        // errores y mensajes comunes de interfaz
+        'error.external.access': 'Se ha producido un error al contactar con el servidor ({status}).',
+        'error.form.not.found': 'No se ha encontrado un formulario para la entidad.',
+        'error.attribute.special.format': 'No existe una configuración especial para mostrar este atributo.',
+        'error.data.test.unsupported.element': 'No hay tipo de elemento definido en el test {testId}.',
 
 	// errores validaciones formulario
 	// ADD/EDIT
