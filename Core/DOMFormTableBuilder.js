@@ -239,6 +239,19 @@ class DOMFormTableBuilder {
                 if (html.component_visible_size) {
                     element.size = html.component_visible_size;
                 }
+
+                if (element.type === 'file') {
+                    const rulesForAction = definition?.rules?.validations?.[action] || {};
+                    const allowedTypes = rulesForAction.type_file
+                        ? (Array.isArray(rulesForAction.type_file)
+                            ? rulesForAction.type_file.map((rule) => rule.type_file ?? rule)
+                            : [rulesForAction.type_file])
+                        : [];
+                    if (allowedTypes.length > 0) {
+                        element.accept = allowedTypes.join(',');
+                    }
+                }
+
                 element.id = baseId;
                 element.name = name;
                 break;

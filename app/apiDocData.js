@@ -641,16 +641,25 @@ const apiDocData = [
       { name: 'tupleData', type: 'object', description: 'Datos precargados, usados por ejemplo para mostrar el enlace de foto.' }
     ],
     returns: 'void',
-    description: 'Muestra el contenedor, añade enlaces a foto_persona si procede y refresca traducciones.'
+    description: 'Muestra el contenedor, inicializa la gestión del campo de fichero y refresca traducciones.'
   },
   {
     className: 'persona',
-    methodName: 'addFotoPersonaLink',
+    methodName: 'setupFileFieldBehaviour',
     params: [
       { name: 'tupleData', type: 'object', description: 'Tupla con posible ruta de foto_persona.' }
     ],
     returns: 'void',
-    description: 'Inserta un enlace de descarga de la foto asociada en el grupo del campo de foto.'
+    description: 'Sincroniza el input de fichero con el atributo foto_persona y prepara la vista previa.'
+  },
+  {
+    className: 'persona',
+    methodName: 'renderFotoPersonaPreview',
+    params: [
+      { name: 'options', type: 'object', description: 'Objeto con file y fileName para decidir si mostrar miniatura o enlace.' }
+    ],
+    returns: 'void',
+    description: 'Dibuja una vista previa del fichero: miniatura temporal al seleccionar o enlace al fichero ya almacenado.'
   },
   {
     className: 'persona',

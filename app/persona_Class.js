@@ -215,7 +215,7 @@ class persona extends EntidadAbstracta{
                         wrapper.style.display = 'block';
                 }
 
-                this.addFotoPersonaLink(tupleData);
+                this.setupFileFieldBehaviour(tupleData);
 
                 const langManager = window.generalUIManager?.languageManager;
                 if (langManager?.refreshRegisteredTranslations) {
@@ -225,33 +225,119 @@ class persona extends EntidadAbstracta{
                 }
         }
 
-        addFotoPersonaLink(tupleData = {}) {
+        setupFileFieldBehaviour(tupleData = {}) {
                 const form = document.getElementById('form_iu');
                 if (!form) return;
 
-                const fotoInput = form.querySelector('[data-attribute-name="foto_persona"]');
-                if (!fotoInput) return;
-                const wrapper = fotoInput.closest('.form-group') || fotoInput.parentElement;
-                if (!wrapper) return;
+                const fileInput = form.querySelector('[data-attribute-name="nuevo_foto_persona"]');
+                const nameInput = this.ensureFotoPersonaField(tupleData);
 
-                const existingLink = wrapper.querySelector('.link_foto_persona');
-                if (existingLink) {
-                        existingLink.remove();
+                if (fileInput) {
+                        fileInput.addEventListener('change', () => {
+                                const file = fileInput.files?.[0] || null;
+                                if (nameInput) {
+                                        nameInput.value = file?.name || tupleData.foto_persona || '';
+                                }
+                                this.renderFotoPersonaPreview({ file, fileName: nameInput?.value || '' });
+                        });
                 }
 
-                if (tupleData.foto_persona) {
+                this.renderFotoPersonaPreview({ fileName: nameInput?.value || tupleData.foto_persona || '' });
+        }
+
+        ensureFotoPersonaField(tupleData = {}) {
+                const form = document.getElementById('form_iu');
+                if (!form) return null;
+
+                let nameInput = form.querySelector('[data-attribute-name="foto_persona"]');
+                if (!nameInput) {
+                        nameInput = document.createElement('input');
+                        nameInput.type = 'hidden';
+                        nameInput.id = 'foto_persona';
+                        nameInput.name = 'foto_persona';
+                        nameInput.setAttribute('data-attribute-name', 'foto_persona');
+                        form.appendChild(nameInput);
+                } else {
+                        nameInput.readOnly = true;
+                }
+
+                nameInput.value = tupleData.foto_persona || nameInput.value || '';
+                return nameInput;
+        }
+
+        renderFotoPersonaPreview({ file = null, fileName = '' } = {}) {
+                const form = document.getElementById('form_iu');
+                const fotoField = form?.querySelector('[data-attribute-name="foto_persona"]');
+                const fileField = form?.querySelector('[data-attribute-name="nuevo_foto_persona"]');
+                const wrapper = (fileField || fotoField)?.closest('.form-group') || fileField?.parentElement || fotoField?.parentElement;
+                if (!wrapper) return;
+
+                const previousPreview = wrapper.querySelector('.file-preview');
+                if (previousPreview) {
+                        previousPreview.remove();
+                }
+
+                const preview = document.createElement('div');
+                preview.className = 'file-preview';
+
+                if (file) {
+                        const img = document.createElement('img');
+                        img.src = URL.createObjectURL(file);
+                        img.alt = file.name;
+                        img.className = 'file-preview__thumb';
+                        img.onload = () => URL.revokeObjectURL(img.src);
+                        preview.appendChild(img);
+
+                        const nameTag = document.createElement('p');
+                        nameTag.textContent = file.name;
+                        preview.appendChild(nameTag);
+                } else if (fileName) {
                         const link = document.createElement('a');
                         link.className = 'link_foto_persona';
-                        link.href = `http://193.147.87.202/ET2/filesuploaded/files_foto_persona/${tupleData.foto_persona}`;
+                        link.href = `http://193.147.87.202/ET2/filesuploaded/files_foto_persona/${fileName}`;
                         link.target = '_blank';
 
                         const img = document.createElement('img');
                         img.src = './iconos/FILE.png';
                         img.alt = 'foto_persona';
-
                         link.appendChild(img);
-                        wrapper.appendChild(link);
+
+                        const label = document.createElement('span');
+                        label.textContent = fileName;
+
+                        preview.appendChild(link);
+                        preview.appendChild(label);
                 }
+
+                if (preview.children.length > 0) {
+                        wrapper.appendChild(preview);
+                }
+        }
+
+        validateFileAttributeFromStructure(attributeName, action) {
+                const structure = this.getStructure?.();
+                const rulesForAction = structure?.attributes?.[attributeName]?.rules?.validations?.[action] || {};
+                const input = document.querySelector(`[data-attribute-name="${attributeName}"]`);
+                const fileValue = input?.files?.[0] || null;
+
+                const validationResult = this.validations.validateValueAgainstRules(fileValue, rulesForAction, {
+                        attributeName,
+                        action,
+                        entityInstance: this,
+                });
+
+                if (!validationResult.isValid) {
+                        const codeToShow = validationResult.errorCodes?.[0] || 'ERR_PERSONALIZED';
+                        if (this.dom?.mostrar_error_campo) {
+                                this.dom.mostrar_error_campo(attributeName, codeToShow);
+                        }
+                        return codeToShow;
+                }
+
+                if (this.dom?.mostrar_exito_campo) {
+                        this.dom.mostrar_exito_campo(attributeName);
+                }
+                return true;
         }
 
 	/**********************************************************************************************
@@ -318,29 +404,9 @@ class persona extends EntidadAbstracta{
 		return true;
 	}
 
-	ADD_nuevo_foto_persona_validation(){
-
-		if (!(this.validations.not_exist_file('nuevo_foto_persona'))){
-			this.dom.mostrar_error_campo('nuevo_foto_persona','nuevo_foto_persona_not_exist_file_KO');
-			return "nuevo_foto_persona_not_exist_file_KO";
-		}
-		if (!(this.validations.max_size_file('nuevo_foto_persona',2000000))){
-			this.dom.mostrar_error_campo('nuevo_foto_persona','nuevo_foto_persona_max_size_file_KO');
-			return "nuevo_foto_persona_max_size_file_KO";
-		}
-		if (!(this.validations.type_file('nuevo_foto_persona',['image/jpeg']))){
-			this.dom.mostrar_error_campo('nuevo_foto_persona','nuevo_foto_persona_type_file_KO');
-			return "nuevo_foto_persona_type_file_KO";
-		}
-		if (!(this.validations.format_name_file('nuevo_foto_persona','[a-zA-Z.]'))){
-			this.dom.mostrar_error_campo('nuevo_foto_persona','nuevo_foto_persona_format_name_file_KO');
-			return "nuevo_foto_persona_format_name_file_KO";
-		}
-		this.dom.mostrar_exito_campo('nuevo_foto_persona');
-		return true;
-
-
-	}
+        ADD_nuevo_foto_persona_validation(){
+                return this.validateFileAttributeFromStructure('nuevo_foto_persona', 'ADD');
+        }
 
 	/**
 		
@@ -371,29 +437,9 @@ class persona extends EntidadAbstracta{
 
 	}
 
-	EDIT_nuevo_foto_persona_validation(){
-
-		if (!(this.validations.not_exist_file('nuevo_foto_persona'))){
-			this.dom.mostrar_exito_campo('nuevo_foto_persona');
-			return true;
-		}
-		if (!(this.validations.max_size_file('nuevo_foto_persona',2000))){
-			this.dom.mostrar_error_campo('nuevo_foto_persona','nuevo_foto_persona_max_size_file_KO');
-			return "nuevo_foto_persona_max_size_file_KO";
-		}
-		if (!(this.validations.type_file('nuevo_foto_persona',['image/jpeg']))){
-			this.dom.mostrar_error_campo('nuevo_foto_persona','nuevo_foto_persona_type_file_KO');
-			return "nuevo_foto_persona_type_file_KO";
-		}
-		if (!(this.validations.format_name_file('nuevo_foto_persona','[a-zA-Z.]'))){
-			this.dom.mostrar_error_campo('nuevo_foto_persona','nuevo_foto_persona_format_name_file_KO');
-			return "nuevo_foto_persona_format_name_file_KO";
-		}
-		this.dom.mostrar_exito_campo('nuevo_foto_persona');
-		return true;
-
-
-	}
+        EDIT_nuevo_foto_persona_validation(){
+                return this.validateFileAttributeFromStructure('nuevo_foto_persona', 'EDIT');
+        }
 
 	/**
 		
