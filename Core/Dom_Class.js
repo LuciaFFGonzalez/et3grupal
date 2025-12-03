@@ -61,9 +61,9 @@ class dom extends dom_table {
                 setLang();
 
                 if (errorElement) {
-                        const translatedMessage = langManager?.getText?.(codigoerror) || codigoerror;
-                        const fullMessage = `${codigoerror}-${lang}: ${translatedMessage}`;
-                        errorElement.textContent = fullMessage;
+                        const translatedMessage = langManager?.getErrorMessage?.(codigoerror)
+                                || this.buildErrorText(codigoerror, lang);
+                        errorElement.textContent = translatedMessage;
                 }
         }
 
@@ -90,6 +90,11 @@ class dom extends dom_table {
         }
 
         buildErrorText(codigoerror, lang){
+                const langManager = window?.generalUIManager?.languageManager;
+                if (langManager?.getErrorMessage) {
+                        return langManager.getErrorMessage(codigoerror);
+                }
+
                 const dictionaries = {
                         ES: typeof textos_ES !== 'undefined' ? textos_ES : null,
                         EN: typeof textos_EN !== 'undefined' ? textos_EN : null
@@ -100,7 +105,8 @@ class dom extends dom_table {
                         ? activeDictionary[codigoerror]
                         : codigoerror;
 
-                return `${codigoerror}-${lang}: ${translated}`;
+                const localizedCode = `${codigoerror}-${lang}`;
+                return `${localizedCode}: ${translated}`;
         }
 
 	fillform(formdata, idform){

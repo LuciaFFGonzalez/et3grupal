@@ -197,7 +197,9 @@ class UIManager {
         const container = document.getElementById('contenedor_IU_form');
         if (!container) return;
 
-        const entityName = this.currentStructure?.entity
+        const entityKey = this.currentStructure?.entity ? `text_entity_${this.currentStructure.entity}` : null;
+        const entityName = (entityKey && this.getText(entityKey, this.currentStructure.entity))
+            || this.currentStructure?.entity
             || this.getText('ui.placeholder.entity.unnamed', 'entidad sin nombre');
 
         const title = document.getElementById('class_contenido_titulo_form');

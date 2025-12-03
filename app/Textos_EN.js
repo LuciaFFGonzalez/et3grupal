@@ -9,6 +9,15 @@ var textos_EN = {
     'text_team_data_title': 'Team data',
     'text_api_link_label': 'API',
     'text_api_link_title': 'API documentation',
+    'api.header.title': 'API Documentation',
+    'api.header.back': '← Back to the application',
+    'api.description': 'List generated dynamically from the main ET3 classes.',
+    'api.no.params': 'No parameters',
+    'api.empty': 'No API information available.',
+    'api.table.header.method': 'Method',
+    'api.table.header.params': 'Parameters',
+    'api.table.header.return': 'Returns',
+    'api.table.header.description': 'Description',
     
     // textos de test
     /*'res_estructura_tests':'Tabla verificacion estructura de test',
@@ -23,6 +32,8 @@ var textos_EN = {
         'text_menu_persona': 'Person Management',
         'text_menu_gestionar_persona': 'Manage person',
         'text_menu_producto': 'Manage product',
+    'text_entity_persona': 'Person',
+    'text_entity_producto': 'Product',
 
     // textos entidad persona
         'text_titulo_page_persona' : 'Personal Data Management',
@@ -60,6 +71,12 @@ var textos_EN = {
         'label_Masculino': 'Male',
         'label_Femenino': 'Female',
         'label_Otro': 'Other',
+
+        // errores y mensajes comunes de interfaz
+        'error.external.access': 'An error occurred while contacting the server ({status}).',
+        'error.form.not.found': 'No form is available for this entity.',
+        'error.attribute.special.format': 'No custom display has been defined for this attribute.',
+        'error.data.test.unsupported.element': 'There is no element type defined in test {testId}.',
 
 	// errores validaciones formulario
 	// ADD/EDIT

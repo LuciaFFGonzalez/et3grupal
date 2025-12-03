@@ -42,11 +42,16 @@ class ExternalAccess{
                 resolve(res);
             })
             .fail(res => {
-                alert('error : '+res.status);
+                const langManager = window?.generalUIManager?.languageManager;
+                const status = res?.status ?? '';
+                const template = langManager?.getText?.('error.external.access')
+                        || 'Se ha producido un error al contactar con el servidor ({status}).';
+                const message = template.replace('{status}', status);
+                alert(message);
             })
-    
+
         });
-    
+
     }
 
 

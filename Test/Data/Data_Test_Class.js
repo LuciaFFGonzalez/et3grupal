@@ -114,7 +114,11 @@ class Data_Test {
                             this.rellenarvalorradio(nombrecampo, valorcampo);
                             break;
                         default:
-                            alert('no hay tipo de elemento definido en el test '+resultadopruebas.NumDef);
+                            const langManager = window?.generalUIManager?.languageManager;
+                            const template = langManager?.getText?.('error.data.test.unsupported.element')
+                                || 'No hay tipo de elemento definido en el test {testId}.';
+                            const message = template.replace('{testId}', resultadopruebas.NumDef || '');
+                            alert(message);
 
                     }
                     

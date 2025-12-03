@@ -155,20 +155,23 @@
 				const entities = Array.isArray(window.entitiesConfig) ? window.entitiesConfig : [];
 
 				entities.forEach((entityName) => {
-					const listItem = document.createElement('li');
-					listItem.className = 'opcionmenu';
+                                const listItem = document.createElement('li');
+                                listItem.className = 'opcionmenu';
 
-					const trigger = document.createElement('span');
-					const labelKey = `text_menu_${entityName}`;
-					trigger.className = `${labelKey}`;
-					trigger.onclick = () => window.uiManager?.loadEntity(entityName);
+                                const trigger = document.createElement('span');
+                                const entityLabelKey = `text_entity_${entityName}`;
+                                const menuLabelKey = `text_menu_${entityName}`;
+                                trigger.className = `${entityLabelKey} ${menuLabelKey}`;
+                                trigger.onclick = () => window.uiManager?.loadEntity(entityName);
 
-					const resolvedText = window.generalUIManager?.languageManager?.getText?.(labelKey) || entityName;
-					trigger.textContent = resolvedText;
+                                const resolvedText = window.generalUIManager?.languageManager?.getText?.(entityLabelKey)
+                                        || window.generalUIManager?.languageManager?.getText?.(menuLabelKey)
+                                        || entityName;
+                                trigger.textContent = resolvedText;
 
-					if (window.generalUIManager?.languageManager?.registerTranslationElement) {
-						window.generalUIManager.languageManager.registerTranslationElement(trigger, labelKey, resolvedText);
-					}
+                                if (window.generalUIManager?.languageManager?.registerTranslationElement) {
+                                        window.generalUIManager.languageManager.registerTranslationElement(trigger, entityLabelKey, resolvedText);
+                                }
 
 					listItem.appendChild(trigger);
 					menuList.appendChild(listItem);

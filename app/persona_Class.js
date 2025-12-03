@@ -657,17 +657,20 @@ class persona extends EntidadAbstracta{
 				
 				return day+'/'+month+'/'+year;
 				break;
-			case 'foto_persona':
-				var link = 'error';
-				if (valorentrada !== ''){
-					link = valorentrada+`  <a class="link_foto_persona" href="http://193.147.87.202/ET2/filesuploaded/files_foto_persona/`+valorentrada+`"><img src="./iconos/FILE.png" /></a>`;
-				}
-				return link;
-				break;
-			case 'default':
-				alert('no existe mostrar especial para ese atributo');
-				break;
-		}
+                        case 'foto_persona':
+                                var link = 'error';
+                                if (valorentrada !== ''){
+                                        link = valorentrada+`  <a class="link_foto_persona" href="http://193.147.87.202/ET2/filesuploaded/files_foto_persona/`+valorentrada+`"><img src="./iconos/FILE.png" /></a>`;
+                                }
+                                return link;
+                                break;
+                        case 'default':
+                                const langManager = window?.generalUIManager?.languageManager;
+                                const message = langManager?.getText?.('error.attribute.special.format')
+                                        || 'No existe una configuración especial para mostrar este atributo.';
+                                alert(message);
+                                break;
+                }
 
 	}
 
