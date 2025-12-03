@@ -64,6 +64,9 @@ class DOMFormTableBuilder {
             useEntityPrefix = true,
         } = options;
 
+        const forceReadOnly = ['SHOWCURRENT', 'DELETE'].includes(action);
+        const forceDisabled = ['SHOWCURRENT', 'DELETE'].includes(action);
+
         formElement.id = formId || `form_${entityStructure.entity}_${action.toLowerCase()}`;
         [...this.defaultFormClassList, ...formClasses].forEach((cls) => formElement.classList.add(cls));
         formElement.setAttribute('data-entity', entityStructure.entity);
@@ -90,10 +93,14 @@ class DOMFormTableBuilder {
             wrapper.appendChild(label);
 
             const fieldValue = tupleData[attributeName];
+            const rulesForAction = definition?.rules?.validations?.[action] || {};
             const fieldElement = this.#buildField(attributeName, definition, action, fieldValue, entityStructure.entity, {
                 readonlyAttributes,
                 disabledAttributes,
                 useEntityPrefix,
+                forceReadOnly,
+                forceDisabled,
+                rulesForAction,
             });
 
             wrapper.appendChild(fieldElement);
@@ -145,10 +152,18 @@ class DOMFormTableBuilder {
         const useEntityPrefix = options.useEntityPrefix !== false;
         const readonlyAttributes = options.readonlyAttributes || [];
         const disabledAttributes = options.disabledAttributes || [];
+        const rulesForAction = options.rulesForAction || {};
         const baseId = useEntityPrefix ? `${entityName}_${name}` : name;
 
-        const isReadonly = readonlyAttributes.includes(name) || action === 'SHOWCURRENT';
-        const isDisabled = disabledAttributes.includes(name);
+        const readonlyActions = html.readonlyOnActions || [];
+        const disabledActions = html.disabledOnActions || [];
+        const isReadonly = options.forceReadOnly
+            || readonlyAttributes.includes(name)
+            || readonlyActions.includes(action)
+            || action === 'SHOWCURRENT';
+        const isDisabled = options.forceDisabled
+            || disabledAttributes.includes(name)
+            || disabledActions.includes(action);
 
         switch (tag) {
             case 'textarea':
@@ -260,6 +275,7 @@ class DOMFormTableBuilder {
         if (tag !== 'radio' && tag !== 'checkbox') {
             element.classList.add(this.defaultInputClass);
             element.setAttribute('data-attribute-name', name);
+            element.setAttribute('data-action', action);
             if (isReadonly) {
                 element.readOnly = true;
             }
@@ -272,6 +288,15 @@ class DOMFormTableBuilder {
             element.disabled = true;
         }
 
+        this.#applyValidationAttributes(element, rulesForAction, {
+            attributeName: name,
+            action,
+            tag,
+            isReadonly,
+            isDisabled,
+            definition,
+        });
+
         return element;
     }
 
@@ -282,6 +307,11 @@ class DOMFormTableBuilder {
      * @param {Object} entityStructure - Structure describing the entity fields.
      * @param {Array<Object>} dataArray - Data to populate the table rows.
      */
+    createDataTable(containerElement, entityStructure, dataArray, options = {}) {
+        // Alias de conveniencia con nombre explícito para dejar claro qué recibe.
+        return this.createTable(containerElement, entityStructure, dataArray, options);
+    }
+
     createTable(containerElement, entityStructure, dataArray, options = {}) {
         if (!containerElement || !entityStructure || !entityStructure.attributes) {
             return;
@@ -392,6 +422,81 @@ class DOMFormTableBuilder {
         button.setAttribute('data-row-index', rowIndex);
         // Hook: external code should assign onclick/keyboard handlers here.
         return button;
+    }
+
+    #applyValidationAttributes(element, rulesForAction, {
+        attributeName = '',
+        action = '',
+        tag = '',
+        isReadonly = false,
+        isDisabled = false,
+        definition = {},
+    } = {}) {
+        if (!element) return;
+
+        const normalizedRules = this.#normalizeRulesForDataset(rulesForAction || {});
+        const shouldRequire = !isReadonly
+            && !isDisabled
+            && (normalizedRules.required === true || (action !== 'SEARCH' && definition?.is_null === false));
+
+        const targetElements = (tag === 'radio' || tag === 'checkbox')
+            ? element.querySelectorAll('input')
+            : [element];
+
+        targetElements.forEach((inputEl) => {
+            inputEl.setAttribute('data-attribute-name', attributeName);
+            inputEl.setAttribute('data-action', action);
+
+            if (shouldRequire) {
+                inputEl.required = true;
+            }
+
+            if (normalizedRules.min_size !== undefined && this.#supportsLengthConstraints(inputEl)) {
+                inputEl.minLength = normalizedRules.min_size;
+            }
+
+            if (normalizedRules.max_size !== undefined && this.#supportsLengthConstraints(inputEl)) {
+                inputEl.maxLength = normalizedRules.max_size;
+            }
+
+            if (normalizedRules.exp_reg && this.#supportsPattern(inputEl)) {
+                inputEl.pattern = normalizedRules.exp_reg;
+            }
+
+            inputEl.dataset.validationRules = JSON.stringify(normalizedRules);
+        });
+    }
+
+    #supportsLengthConstraints(element) {
+        if (!element) return false;
+        if (element.tagName === 'TEXTAREA') return true;
+        if (element.tagName === 'INPUT') {
+            return !['file', 'checkbox', 'radio'].includes(element.type);
+        }
+        return false;
+    }
+
+    #supportsPattern(element) {
+        if (!element) return false;
+        return element.tagName === 'INPUT' && !['file', 'checkbox', 'radio'].includes(element.type);
+    }
+
+    #normalizeRulesForDataset(rules) {
+        const clonedRules = { ...rules };
+
+        if (Array.isArray(clonedRules.max_size_file)) {
+            clonedRules.max_size_file = clonedRules.max_size_file[0]?.max_size_file ?? clonedRules.max_size_file[0];
+        }
+
+        if (Array.isArray(clonedRules.type_file)) {
+            clonedRules.type_file = clonedRules.type_file.map((rule) => rule.type_file ?? rule);
+        }
+
+        if (Array.isArray(clonedRules.format_name_file)) {
+            clonedRules.format_name_file = clonedRules.format_name_file[0]?.format_name_file ?? clonedRules.format_name_file[0];
+        }
+
+        return clonedRules;
     }
 
     #setTranslatedText(element, key, fallbackText = '', property = 'textContent') {
