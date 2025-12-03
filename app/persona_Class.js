@@ -667,7 +667,7 @@ class persona extends EntidadAbstracta{
                 const structure = this.getStructure?.() || window['estructura_persona'] || {};
                 const visibleAttributes = Object.keys(structure.attributes || {}).filter((attr) => attr !== 'nuevo_foto_persona');
 
-                builder.createTable(container, structure, results, {
+                builder.createDataTable(container, structure, results, {
                         visibleAttributes,
                         actions: ['SHOWCURRENT', 'EDIT'],
                         onActionClick: (action, rowIndex, rowData) => {
