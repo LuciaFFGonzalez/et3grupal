@@ -59,13 +59,13 @@
 
 	</head>
 	<body onload="initPage();">
-		<header id='header_page' class='bordeado'>
-			<span class='text_titulo_app'></span>
-			<img src="./iconos/Spain.png" onclick="changeLanguage('ES');" />
-			<img src="./iconos/United-Kingdom.png" onclick="changeLanguage('EN');" />
-			<a id="api-doc-link" href="./API.html"> <img src="./iconos/API.png" /></a>
-		</header>
-		<nav class='bordeado'><span class = 'text_titulo_menu' onclick="menu_work();"></span></nav>
+                <header id='header_page' class='bordeado'>
+                        <span class='text_titulo_app'></span>
+                        <img src="./iconos/Spain.png" alt="Cambiar idioma a español" role="button" tabindex="0" onclick="changeLanguage('ES');" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();changeLanguage('ES');}" />
+                        <img src="./iconos/United-Kingdom.png" alt="Cambiar idioma a inglés" role="button" tabindex="0" onclick="changeLanguage('EN');" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();changeLanguage('EN');}" />
+                        <a id="api-doc-link" href="./API.html" aria-label="Abrir documentación de la API"> <img src="./iconos/API.png" alt="Acceso a la documentación de la API" /></a>
+                </header>
+                <nav class='bordeado'><span class = 'text_titulo_menu' role="button" tabindex="0" onclick="menu_work();" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();menu_work();}"></span></nav>
 		<!-- El menú dinámico de entidades se integrará en este contenedor. -->
 		<aside id='div-menu'>
 			<ol id="entity-menu-list"></ol>
@@ -74,12 +74,12 @@
 			<section id="IU_manage_head">
 				<div id='title_page' class='bordeado'><span id = "text_title_page"></span></div>
 				<div id="add_search_columns">
-					<img id="botonADD" src="./iconos/ADD.png" onclick="uiManager.refreshAddView();" />
-					<img id="botonSEARCH" src="./iconos/SEARCH.png" onclick="uiManager.refreshSearchView();"/>
-					<label id="label_seleccioncolumnas" class ="label_seleccioncolumnas"></label>
-					<select id="seleccioncolumnas" multiple></select>
-					<img id="botonTEST_UNIT" src="./iconos/TEST_UNIT.png" onclick="test = new Unit_Test(entidad?.nombreentidad || uiManager.currentEntity?.nombreentidad)"/>
-					<img id="botonTEST_DATA" src="./iconos/TEST.png" onclick="test = new Data_Test(eval(entidad?.nombreentidad || uiManager.currentEntity?.nombreentidad))"/>
+                                        <img id="botonADD" src="./iconos/ADD.png" alt="Abrir formulario de alta" role="button" tabindex="0" onclick="uiManager.refreshAddView();" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();uiManager.refreshAddView();}" />
+                                        <img id="botonSEARCH" src="./iconos/SEARCH.png" alt="Abrir formulario de búsqueda" role="button" tabindex="0" onclick="uiManager.refreshSearchView();" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();uiManager.refreshSearchView();}"/>
+                                        <label id="label_seleccioncolumnas" class ="label_seleccioncolumnas"></label>
+                                        <select id="seleccioncolumnas" multiple></select>
+                                        <img id="botonTEST_UNIT" src="./iconos/TEST_UNIT.png" alt="Ejecutar tests unitarios" role="button" tabindex="0" onclick="test = new Unit_Test(entidad?.nombreentidad || uiManager.currentEntity?.nombreentidad)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();test = new Unit_Test(entidad?.nombreentidad || uiManager.currentEntity?.nombreentidad);}"/>
+                                        <img id="botonTEST_DATA" src="./iconos/TEST.png" alt="Ejecutar tests de datos" role="button" tabindex="0" onclick="test = new Data_Test(eval(entidad?.nombreentidad || uiManager.currentEntity?.nombreentidad))" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();test = new Data_Test(eval(entidad?.nombreentidad || uiManager.currentEntity?.nombreentidad));}"/>
 				</div>
 			</section>
 			<section id="IU_manage_table"></section>
@@ -92,7 +92,7 @@
 				</div>
 				<div id="contenedor_IU_form"></div>
 				<br>
-				<img src="./iconos/BACK.png" onclick="entidad.dom.hide_element('Div_IU_form');" />
+                                <img src="./iconos/BACK.png" alt="Cerrar formulario" role="button" tabindex="0" onclick="entidad.dom.hide_element('Div_IU_form');" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();entidad.dom.hide_element('Div_IU_form');}" />
 			</div>
 		</section>
 		<section id="Div_IU_Test" class='div_IU_form bordeado'></section>
@@ -163,6 +163,15 @@
                                 const menuLabelKey = `text_menu_${entityName}`;
                                 trigger.className = `${entityLabelKey} ${menuLabelKey}`;
                                 trigger.onclick = () => window.uiManager?.loadEntity(entityName);
+                                trigger.tabIndex = 0;
+                                trigger.setAttribute('role', 'button');
+                                trigger.setAttribute('aria-label', `${entityName}`);
+                                trigger.onkeydown = (event) => {
+                                        if (event.key === 'Enter' || event.key === ' ') {
+                                                event.preventDefault();
+                                                window.uiManager?.loadEntity(entityName);
+                                        }
+                                };
 
                                 const resolvedText = window.generalUIManager?.languageManager?.getText?.(entityLabelKey)
                                         || window.generalUIManager?.languageManager?.getText?.(menuLabelKey)

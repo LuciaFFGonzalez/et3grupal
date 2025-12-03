@@ -2,10 +2,12 @@
 
 :root {
     --light-color: #EFFEFF;
-    --medium-color: #a1c2c5;
+    --medium-color: #8fb7bc;
     --dark-color: #0E2C31;
-    --emphasis-color-1: #5ba0a5;
+    --emphasis-color-1: #4d8c91;
     --emphasis-color-2: #d0f1f4;
+    --focus-outline: #f3a712;
+    --focus-shadow: rgba(243, 167, 18, 0.35);
 }
 
 * {
@@ -28,6 +30,31 @@ body {
 
 .bordeado {
     border: 1px solid var(--dark-color);
+}
+
+a,
+button,
+input,
+select,
+textarea,
+img[role="button"],
+#div-menu li span,
+nav > span {
+    outline: none;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+img[role="button"]:focus-visible,
+#div-menu li span:focus-visible,
+nav > span:focus-visible {
+    outline: 3px solid var(--focus-outline);
+    outline-offset: 3px;
+    box-shadow: 0 0 0 4px var(--focus-shadow);
+    border-radius: 6px;
 }
 
 /* Cabecera */
@@ -702,6 +729,10 @@ footer {
     padding: 0.75rem;
 }
 
+.team-data__wrapper {
+    overflow-x: auto;
+}
+
 /* Formatos genéricos de formularios de entidad */
 .entity-form-container {
     margin: 1.5rem auto;
@@ -986,6 +1017,63 @@ footer {
 #IU_Test_result th {
     max-width: 40pt;
     overflow-wrap: break-word;
+}
+
+@media (max-width: 900px) {
+    #header_page {
+        flex-wrap: wrap;
+        gap: 8pt;
+    }
+
+    #header_page > span {
+        flex-basis: 100%;
+        text-align: center;
+    }
+
+    nav {
+        padding: 10pt;
+    }
+
+    #add_search_columns {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-areas:
+            "add search test_unit"
+            "test select_title select_title"
+            "select_cols select_cols select_cols";
+        column-gap: 8pt;
+    }
+
+    #add_search_columns > select {
+        position: static;
+        width: 100%;
+        min-width: auto;
+        height: auto;
+        max-height: 140pt;
+    }
+
+    #IU_manage_table table {
+        min-width: 600px;
+    }
+
+    .contenidoForm {
+        width: 95%;
+        height: auto;
+        min-height: 70%;
+        margin: 4% auto;
+    }
+
+    .contenidoForm form {
+        padding: 14pt;
+    }
+
+    .entity-form-container {
+        width: 100%;
+        padding: 1rem;
+    }
+
+    .entity-form-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* Tablas generales */
