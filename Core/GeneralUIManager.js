@@ -281,6 +281,26 @@ class UIManager {
         }
     }
 
+    getRulesForAttributeAction(attributeName, action) {
+        const attributeDefinition = this.currentStructure?.attributes?.[attributeName];
+        if (!attributeDefinition) return null;
+
+        const baseRules = attributeDefinition?.rules?.validations?.[action] || {};
+        const resolvedRules = { ...baseRules };
+
+        const isAddOrEdit = action === 'ADD' || action === 'EDIT';
+        const forbidsNull = attributeDefinition?.is_null === false
+            || attributeDefinition?.is_null === 'false'
+            || attributeDefinition?.is_null === 0
+            || attributeDefinition?.is_null === '0';
+
+        if (isAddOrEdit && forbidsNull && resolvedRules.required === undefined) {
+            resolvedRules.required = true;
+        }
+
+        return resolvedRules;
+    }
+
     attachValidationHooks(action) {
         if (!this.validationManager) return;
         const form = document.querySelector('#contenedor_IU_form form') || document.getElementById('form_iu');
@@ -292,8 +312,8 @@ class UIManager {
         const formElements = form.querySelectorAll('input[data-attribute-name], select[data-attribute-name], textarea[data-attribute-name]');
         formElements.forEach((element) => {
             const attributeName = element.dataset.attributeName;
-            const rulesForAction = this.currentStructure?.attributes?.[attributeName]?.rules?.validations?.[action];
-            if (!rulesForAction) return;
+            const rulesForAction = this.getRulesForAttributeAction(attributeName, action);
+            if (!rulesForAction || Object.keys(rulesForAction).length === 0) return;
 
             const handler = () => this.validateFieldOnEvent(element, attributeName, action);
             element.addEventListener('blur', handler);
@@ -358,39 +378,25 @@ class UIManager {
 
     validateCurrentAction(form, action) {
         const structure = this.currentStructure;
-        if (!structure || !structure.attributes) return true;
+        if (!structure || !structure.attributes || !this.validationManager) return true;
 
         let isValid = true;
-        Object.entries(structure.attributes).forEach(([attributeName, config]) => {
-            const actionRules = config?.rules?.validations?.[action];
-            if (!actionRules) return;
+        Object.keys(structure.attributes).forEach((attributeName) => {
+            const rulesForAction = this.getRulesForAttributeAction(attributeName, action);
+            if (!rulesForAction || Object.keys(rulesForAction).length === 0) return;
 
-            const field = form.elements[attributeName];
-            const fieldId = field?.id || attributeName;
-
-            Object.entries(actionRules).forEach(([ruleName, ruleValue]) => {
-                if (ruleName === 'personalized') return;
-                const validator = this.validationManager[ruleName];
-                if (typeof validator !== 'function') return;
-
-                const normalizedValue = Array.isArray(ruleValue)
-                    ? ruleValue.map((rule) => rule[ruleName] ?? rule)
-                    : ruleValue;
-
-                const values = Array.isArray(normalizedValue) ? normalizedValue : [normalizedValue];
-                values.forEach((singleRule) => {
-                    const result = validator.call(this.validationManager, fieldId, singleRule);
-                    if (result === false) {
-                        isValid = false;
-                    }
-                });
+            const field = form.querySelector(`[data-attribute-name="${attributeName}"]`) || form.elements[attributeName];
+            const value = field ? this.extractFieldValue(field, attributeName) : '';
+            const validationResult = this.validationManager.validateValueAgainstRules(value, rulesForAction, {
+                attributeName,
+                action,
+                entityInstance: this.currentEntity,
             });
 
-            if (actionRules.personalized && this.currentEntity?.hasSpecializedTest?.(attributeName)) {
-                const value = field?.value;
-                const specializedResult = this.currentEntity.runSpecializedTest(attributeName, action, value);
-                if (specializedResult !== true) {
-                    isValid = false;
+            if (!validationResult.isValid) {
+                isValid = false;
+                if (field) {
+                    this.showValidationResult(field, attributeName, validationResult.errorCodes);
                 }
             }
         });
@@ -399,8 +405,11 @@ class UIManager {
     }
 
     validateFieldOnEvent(formElement, attributeName, action) {
-        const rulesForAction = this.currentStructure?.attributes?.[attributeName]?.rules?.validations?.[action];
-        if (!rulesForAction || !this.validationManager) return { isValid: true, errorCodes: [] };
+        const rulesForAction = this.getRulesForAttributeAction(attributeName, action);
+        if (!rulesForAction || Object.keys(rulesForAction).length === 0 || !this.validationManager) {
+            this.showValidationResult(formElement, attributeName, []);
+            return { isValid: true, errorCodes: [] };
+        }
 
         const value = this.extractFieldValue(formElement, attributeName);
         const validationResult = this.validationManager.validateValueAgainstRules(value, rulesForAction, {
@@ -492,7 +501,9 @@ class UIManager {
         errors.forEach(({ attributeName, errorCodes }) => {
             const item = document.createElement('li');
             const errorMessages = this.formatErrorCodes(errorCodes);
-            const attributeLabel = this.getText(attributeName, attributeName);
+            const attributeDefinition = this.currentStructure?.attributes?.[attributeName];
+            const labelKey = attributeDefinition?.label || attributeName;
+            const attributeLabel = this.getText(labelKey, labelKey);
             item.textContent = `${attributeLabel}: ${errorMessages.join(', ')}`;
             list.appendChild(item);
         });

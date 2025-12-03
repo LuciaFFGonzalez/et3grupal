@@ -133,29 +133,30 @@ class Validations{
          */
         validateValueAgainstRules(value, rulesForAction, { attributeName = '', action = '', entityInstance = null } = {}) {
                 const errorCodes = [];
+                const rules = rulesForAction || {};
                 const length = this.getLength(value);
 
-                if (rulesForAction?.required) {
+                if (rules.required) {
                         const isEmpty = this.isEmptyValue(value);
                         if (isEmpty) {
                                 errorCodes.push('ERR_REQUIRED');
                         }
                 }
 
-                if (rulesForAction?.min_size !== undefined) {
-                        if (length < rulesForAction.min_size) {
+                if (rules.min_size !== undefined) {
+                        if (length < rules.min_size) {
                                 errorCodes.push('ERR_MIN_SIZE');
                         }
                 }
 
-                if (rulesForAction?.max_size !== undefined) {
-                        if (length > rulesForAction.max_size) {
+                if (rules.max_size !== undefined) {
+                        if (length > rules.max_size) {
                                 errorCodes.push('ERR_MAX_SIZE');
                         }
                 }
 
-                if (rulesForAction?.exp_reg !== undefined && !Array.isArray(value)) {
-                        const regex = new RegExp(rulesForAction.exp_reg);
+                if (rules.exp_reg !== undefined && !Array.isArray(value)) {
+                        const regex = new RegExp(rules.exp_reg);
                         const valueToTest = typeof value === 'string' ? value : value?.name ?? '';
                         if (!regex.test(valueToTest)) {
                                 errorCodes.push('ERR_EXP_REG');
@@ -163,32 +164,32 @@ class Validations{
                 }
 
                 // Soporte inicial para validaciones de fichero
-                if (rulesForAction?.no_file && !value) {
+                if (rules.no_file && !value) {
                         errorCodes.push('ERR_NO_FILE');
                 }
 
-                if (rulesForAction?.max_size_file !== undefined && value?.size !== undefined) {
-                        const maxSizeRule = Array.isArray(rulesForAction.max_size_file)
-                                ? rulesForAction.max_size_file[0]?.max_size_file ?? rulesForAction.max_size_file[0]
-                                : rulesForAction.max_size_file;
+                if (rules.max_size_file !== undefined && value?.size !== undefined) {
+                        const maxSizeRule = Array.isArray(rules.max_size_file)
+                                ? rules.max_size_file[0]?.max_size_file ?? rules.max_size_file[0]
+                                : rules.max_size_file;
                         if (maxSizeRule !== undefined && value.size > maxSizeRule) {
                                 errorCodes.push('ERR_MAX_SIZE_FILE');
                         }
                 }
 
-                if (rulesForAction?.type_file !== undefined && value?.type !== undefined) {
-                        const allowedTypes = Array.isArray(rulesForAction.type_file)
-                                ? rulesForAction.type_file.map((rule) => rule.type_file ?? rule)
-                                : [rulesForAction.type_file];
+                if (rules.type_file !== undefined && value?.type !== undefined) {
+                        const allowedTypes = Array.isArray(rules.type_file)
+                                ? rules.type_file.map((rule) => rule.type_file ?? rule)
+                                : [rules.type_file];
                         if (!allowedTypes.includes(value.type)) {
                                 errorCodes.push('ERR_TYPE_FILE');
                         }
                 }
 
-                if (rulesForAction?.format_name_file !== undefined && value?.name !== undefined) {
-                        const formatRule = Array.isArray(rulesForAction.format_name_file)
-                                ? rulesForAction.format_name_file[0]?.format_name_file ?? rulesForAction.format_name_file[0]
-                                : rulesForAction.format_name_file;
+                if (rules.format_name_file !== undefined && value?.name !== undefined) {
+                        const formatRule = Array.isArray(rules.format_name_file)
+                                ? rules.format_name_file[0]?.format_name_file ?? rules.format_name_file[0]
+                                : rules.format_name_file;
                         if (formatRule !== undefined) {
                                 const nameRegex = new RegExp(formatRule);
                                 if (!nameRegex.test(value.name)) {
@@ -197,7 +198,7 @@ class Validations{
                         }
                 }
 
-                if (rulesForAction?.personalized && attributeName && entityInstance) {
+                if (rules.personalized && attributeName && entityInstance) {
                         const methodName = `specialized_test_${attributeName}`;
                         const specializedFn = entityInstance[methodName];
                         if (typeof specializedFn === 'function') {

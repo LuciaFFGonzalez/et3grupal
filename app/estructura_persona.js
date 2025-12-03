@@ -4,6 +4,7 @@ const estructura_persona = {
     attributes: {
         dni: {
             label: 'dni',
+            is_null: false,
             html: {
                 tag: 'input',
                 type: 'text',
@@ -32,6 +33,7 @@ const estructura_persona = {
         },
         nombre_persona: {
             label: 'nombre_persona',
+            is_null: false,
             html: {
                 tag: 'input',
                 type: 'text',
@@ -47,6 +49,7 @@ const estructura_persona = {
         },
         apellidos_persona: {
             label: 'apellidos_persona',
+            is_null: false,
             html: {
                 tag: 'input',
                 type: 'text',
@@ -62,6 +65,7 @@ const estructura_persona = {
         },
         fechaNacimiento_persona: {
             label: 'fechaNacimiento_persona',
+            is_null: false,
             html: {
                 tag: 'input',
                 type: 'date',
@@ -77,6 +81,7 @@ const estructura_persona = {
         },
         direccion_persona: {
             label: 'direccion_persona',
+            is_null: false,
             html: {
                 tag: 'textarea',
                 rows: 4,
@@ -92,6 +97,7 @@ const estructura_persona = {
         },
         telefono_persona: {
             label: 'telefono_persona',
+            is_null: false,
             html: {
                 tag: 'input',
                 type: 'tel',
@@ -107,6 +113,7 @@ const estructura_persona = {
         },
         email_persona: {
             label: 'email_persona',
+            is_null: false,
             html: {
                 tag: 'input',
                 type: 'email',
@@ -122,6 +129,7 @@ const estructura_persona = {
         },
         titulacion_persona: {
             label: 'titulacion_persona',
+            is_null: false,
             html: {
                 tag: 'select',
                 options: ['GREI', 'GRIA', 'MEI', 'MIA', 'PCEO'],
@@ -136,6 +144,7 @@ const estructura_persona = {
         },
         menu_persona: {
             label: 'menu_persona',
+            is_null: true,
             html: {
                 tag: 'checkbox',
                 multiple: true,
@@ -151,6 +160,7 @@ const estructura_persona = {
         },
         habilidades_persona: {
             label: 'habilidades_persona',
+            is_null: false,
             html: {
                 tag: 'select',
                 multiple: true,
@@ -166,6 +176,7 @@ const estructura_persona = {
         },
         genero_persona: {
             label: 'genero_persona',
+            is_null: false,
             html: {
                 tag: 'radio',
                 options: ['Masculino', 'Femenino', 'Otro'],
@@ -180,6 +191,7 @@ const estructura_persona = {
         },
         acepta_privacidad: {
             label: 'acepta_privacidad',
+            is_null: false,
             html: {
                 tag: 'checkbox',
                 multiple: false,
@@ -194,6 +206,7 @@ const estructura_persona = {
         },
         foto_persona: {
             label: 'foto_persona',
+            is_null: true,
             html: {
                 tag: 'input',
                 type: 'text',
@@ -209,6 +222,7 @@ const estructura_persona = {
         },
         nuevo_foto_persona: {
             label: 'nuevo_foto_persona',
+            is_null: true,
             html: {
                 tag: 'input',
                 type: 'file',
