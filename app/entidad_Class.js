@@ -1,24 +1,22 @@
-class persona extends EntidadAbstracta{
-
+class entidad extends EntidadAbstracta{
         constructor(esTest){
                 super(esTest);
-		
 
 		//definicion de atributos a mostrarn en la tabla de muestra de tuplas al entrar en la gestion de la entidad
-		this.columnasamostrar = ['dni','titulacion_persona', 'menu_persona','genero_persona'];
+		this.columnasamostrar = ['atributo_uno','atributo_dos', 'atributo_tres'];
 		//definicion de atributos a cambiar su visualización
-		this.mostrarespecial = ['fechaNacimiento_persona','foto_persona'];
+		this.mostrarespecial = ['atributo_ocho','atributo_nueve'];
 
                 // definicion de los atributos del formulario (Necesario para test de unidad)
-                this.attributes = [  'dni',
-                                'nombre_persona',
-                                'apellidos_persona',
-                                'fechaNacimiento_persona',
-                                'direccion_persona',
-                                'telefono_persona',
-                                'email_persona',
-                                'foto_persona',
-                                'nuevo_foto_persona'
+                this.attributes = [  'atributo_uno',
+                                'atributo_dos',
+                                'atributo_tres',
+                                'atributo_cuatro',
+                                'atributo_cinco',
+                                'atributo_seis',
+                                'atributo_siete',
+                                'atributo_ocho',
+                                'atributo_nueve'
                             ];
 
                 this.personasDummy = [
@@ -344,133 +342,234 @@ class persona extends EntidadAbstracta{
 		fields validations for ADD
 	***********************************************************************************************/
 
-	/** 
-		
-		@param 
-		@return
-			{string} Error code of field value (fieldname_validationfunction_KO) 
-			or
-			{bool} true due the field value is correct
-
-	*/
-	ADD_dni_validation(){
-		
-		if (!(this.validations.min_size('dni',9))){
-			this.dom.mostrar_error_campo('dni','dni_min_size_KO');
-			return "dni_min_size_KO";
-		}
-		if (!(this.validations.max_size('dni',9))){
-			this.dom.mostrar_error_campo('dni','dni_max_size_KO');
-			return "dni_max_size_KO";
-		}
-				
-		var resp = this.personalize_dni_nie();
-		if (!(resp === true)){
-			this.dom.mostrar_error_campo('dni',resp);
-			return resp;
-		}
-		
-		this.dom.mostrar_exito_campo('dni');
-		return true;
-
-	}
-
-	/**
-		
-		@param 
-		@return
-			{string} Error code of field value (fieldname_validationfunction_KO) 
-			or
-			{bool} true due the field value is correct
-
-	*/
-
-	ADD_nombre_persona_validation(){
-		
-		if (!(this.validations.min_size('nombre_persona',4))){
-			this.dom.mostrar_error_campo('nombre_persona','nombre_persona_min_size_KO');
-			return "nombre_persona_min_size_KO";
-		}
-		if (!(this.validations.max_size('nombre_persona',15))){
-			this.dom.mostrar_error_campo('nombre_persona','nombre_persona_max_size_KO');
-			return "nombre_persona_max_size_KO";
-		}
-		// allowed format aA to zZ letter
-		if (!(this.validations.format('nombre_persona', '^[A-Za-z]*$'))){
-			this.dom.mostrar_error_campo('nombre_persona','nombre_persona_format_KO');
-			return "nombre_persona_format_KO";
-		}
-		this.dom.mostrar_exito_campo('nombre_persona');
-		return true;
-	}
-
-        ADD_nuevo_foto_persona_validation(){
-                return this.validateFileAttributeFromStructure('nuevo_foto_persona', 'ADD');
+        funcion_input_y_textarea(accion_restriccion_claves, accion_restriccion_valores, restriccion) {
+                if (!(this.validations.accion_restriccion_claves[restriccion](atributo, accion_restriccion_valores[restriccion]))){
+                        this.dom.mostrar_error_campo(atributo, accion_restriccion_claves[restriccion]);
+                        return accion_restriccion_claves[restriccion];
+                }                        
+                if (accion_restriccion_claves[restriccion] == "personalized") {
+                        let llamada = "this." + "personalize_" + atributo + "()";
+                        var resp = llamada;
+                        if (!(resp === true)){
+                                this.dom.mostrar_error_campo(atributo,resp);
+                                return resp;
+                        }
+                }
         }
 
-	/**
-		
-		@param 
-		@return
-			{bool} true if all field validations are correct or false if any field validation is false
+        /*
+        funcion_multiple(type, accion_restriccion_claves, restriccion, atributo, multiple) {
+                if (atributo_html_tag == "select") { // select múltiple
+                        var titulacion = document.getElementsByName(attibute);
+                        var titulaciones_permitidas = [];
 
-	*/
+                        for (var i=0;i<multiple_options.length;i++) {
+                                titulaciones_permitidas.push(titulacion[i].value);
+                        }
+
+                        if (titulaciones_permitidas.includes(document.getElementById(attribute).value)){
+                                this.dom.mostrar_exito_campo(attribute);
+                                return true;
+                        }
+                        else{
+                                if (document.getElementById(attribute).value == ''){
+                                        this.dom.mostrar_error_campo(attribute,error);
+                                        return error;
+                                }
+                                else{
+                                        this.dom.mostrar_error_campo(attribute,error);
+                                        return error;
+                                }
+                        }
+                }
+        }
+        */
+
+        funcion_not_multiple(accion_restriccion_claves, restriccion, attribute, error) {
+                if (atributo_html_tag == "select") { // select no múltiple
+                        var titulacion = document.getElementsByName(attibute);
+                        var titulaciones_permitidas = [];
+
+                        for (var i=0;i<multiple_options.length;i++) {
+                                titulaciones_permitidas.push(titulacion[i].value);
+                        }
+
+                        if (titulaciones_permitidas.includes(document.getElementById(attribute).value)){
+                                this.dom.mostrar_exito_campo(attribute);
+                                return true;
+                        }
+                        else{
+                                if (document.getElementById(attribute).value == ''){
+                                        this.dom.mostrar_error_campo(attribute,error);
+                                        return error;
+                                }
+                                else{
+                                        this.dom.mostrar_error_campo(attribute,error);
+                                        return error;
+                                }
+                        }
+                } else if (atributo_html_tag == "radio") { // radio	
+                        var radio = document.getElementsByName(attibute);
+                        var contador = 0;
+                        var valores = [];
+
+                        for (var i=0;i<radio.length;i++) {
+                                valores.push(radio[i].value);
+                        }
+                        
+                        for (var i=0;i<radio.length;i++){
+                                if (radio[i].checked){
+                                        if (valores.includes(radio[i].value))
+                                        {
+                                                contador++;
+                                        }
+                                        else{
+                                                if (radio[i].value == ''){}
+                                                else{
+                                                        this.dom.mostrar_error_campo(attribute,error);
+                                                        return error;
+                                                }
+                                        }
+                                }
+                        }
+
+                        var codeerror = '';
+
+                        switch (contador){
+                                case 1:
+                                        this.dom.mostrar_exito_campo(attribute);
+                                        return true;
+                                default:
+                                        codeerror = error;
+                                        break;
+                        }
+
+                        this.dom.mostrar_error_campo(attribute,codeerror);
+                        return codeerror;
+                } else { // checkbox
+                        var checkbox = document.getElementsByName(attribute);
+                        var valores = [];
+
+                        for (var i=0;i<checkbox.length;i++) {
+                                valores.push(checkbox[i].value);
+                        }
+
+                        for (var i=0;i<checkbox.length;i++){
+                                if (checkbox[i].checked){
+                                        if (valores.includes(checkbox[i].value))
+                                        {
+                                                return true;
+                                        }
+                                }
+                        }
+                        return error;
+                }
+        }
+
+        funciones() {
+                const funcion = {
+                        [atributo]: function(accion_restriccion_claves, accion_restriccion_valores, restriccion) { // min_size, max_size, etc
+                                for (var restriccion = 0; restriccion < accion_restriccion_claves.lenght; restriccion++) {
+                                        if (tag == "input" || tag == "textarea") { // input: text, date, tel, email, file
+                                                funcion_input_y_textarea(accion_restriccion_claves, accion_restriccion_valores, restriccion)
+                                        } else if (atributo_html_tag == "select" && atributo[2][1] == "multiple") { 
+                                                // select: multiple (true or false), options (length)
+                                                funcion_multiple(accion_restriccion_claves, restriccion, atributo);
+                                        } else {
+                                                // select: options (length)
+                                                // radio: options (length)
+                                                // checkbox: multiple (true or false), options (length) (si es false no existe)
+                                                funcion_not_multiple(accion_restriccion_claves, restriccion, atributo);
+                                        }
+                                        this.dom.mostrar_exito_campo(atributo);
+                                        return true;
+                                }
+                        }
+                }
+        }
+
+        validaciones () {
+                // Datos necesarios
+                let nombreDeLaEntidad = estructura_nombreentidad[0];
+                let attributesCounter = estructura_nombreentidad[1].lenght; // obtener nº de atributos de la entidad
+
+                if (attributesCounter < 1) {return true}; // si no tiene atributos no hay nada que comprobar
+
+                // atributos, predeterminado: primer atributo
+                let atributo; // = estructura_nombreentidad[1][0];
+                // let atributo_is_null = estructura_nombreentidad[1][1];
+                
+                /*
+                input: text, date, tel, email, file, 
+                textarea: row y columns
+                select: options.length
+                select: multiple (true or false), options.length
+                checkbox: multiple (true or false), options.length (si es false no existe)
+                radio: options.length
+                */
+
+                let atributo_html_tag; // = atributo[2][0]; // input, checkbox...
+                let atributo_html_type_or_multiple; // = tributo[2][1]; // text, date... para input, multiple para demás
+                // let atributo_html_component_visible = estructura_nombreentidad[1][0][2][2];
+                let atributo_rules; // = atributo[3];
+                let atributo_rules_validations; // = atributo[3][0].length; // ¿ADD, EDIT y SEARCH?
+                let multiple_options;
+
+                for (var i = 0; i < attributesCounter; i++) {
+                        atributo = estructura_nombreentidad[1][i];
+                        atributo_html_tag = atributo[2][0]; // input, checkbox...
+                        if (atributo_html_tag == "input" || atributo_html_tag == "textarea") {
+                                if (atributo_html_tag == "input") {atributo_html_type_or_multiple = atributo[2][1];} // text, date...
+                        } else if (atributo_html_tag == "select" && atributo[2][1] == "multiple") {
+                                if (atributo[2][1] != false) {let multiple_options = atributo[2][2];}
+                        } else {
+                        }
+
+                        atributo_rules = atributo[3];
+                        atributo_rules_validations = atributo_rules[0].length; // ¿ADD, EDIT y SEARCH?
+
+                        for (var j = 0; j < atributo_rules_validations; j++) {
+                                let accion = atributo_rules_validations[j]; // ¿ADD, EDIT o SEARCH?
+                                let accion_cantidad_restricciones = accion.length; // 
+                                // const claves = Object.keys(ADD);
+
+                                let llamada_a_funcion = accion + "-" + atributo + "_validation";
+
+                                for (var k = 0; k < accion_cantidad_restricciones; k++) {
+                                        let accion_restriccion = accion_cantidad_restricciones[k];
+
+                                        let accion_restriccion_claves = Object.keys(accion_restriccion); // min_size, max_size, etc
+                                        let accion_restriccion_valores = Object.values(accion_restriccion); // 9, 200, etc
+
+                                        if (atributo_html_tag == "input" || atributo_html_tag == "textarea") {
+                                                llamada_a_funcion(accion_restriccion_claves, accion_restriccion_valores, restriccion);
+                                        } else if (atributo_html_tag == "select" && atributo[2][1] == "multiple") {
+
+                                        } else {
+                                                let multiple_options = atributo[2][2];
+                                                llamada_a_funcion(atributo_html_type, accion_restriccion_claves, accion_restriccion_valores, restriccion);
+
+                                                let not_multiple_options = atributo[2][2];
+                                                llamada_a_funcion(atributo_html_type, accion_restriccion_claves, accion_restriccion_valores, restriccion);
+                                        }
+                                }
+                        }
+
+                }
+        }
+
 	ADD_submit_persona(){
-
 		let result = (
-					(this.ADD_dni_validation()) &
-					(this.ADD_nombre_persona_validation()) &
-					(this.ADD_nuevo_foto_persona_validation()) &
-					(this.ADD_titulacion_persona_validation())
-					)
-		
+                        (this.ADD_dni_validation()) &
+                        (this.ADD_nombre_persona_validation()) &
+                        (this.ADD_nuevo_foto_persona_validation()) &
+                        (this.ADD_titulacion_persona_validation())
+                )
 		result = Boolean(result);
-		
 		return result;	
-
-
 	}
-
-	EDIT_nombre_persona_validation(){
-
-		return this.ADD_nombre_persona_validation();
-
-	}
-
-        EDIT_nuevo_foto_persona_validation(){
-                return this.validateFileAttributeFromStructure('nuevo_foto_persona', 'EDIT');
-        }
-
-	/**
-		
-		@param 
-		@return
-			{bool} true if all field validations are correct or false if any field validation is false
-
-	*/
-	EDIT_submit_persona(){
-
-		let result = (
-					(this.EDIT_nombre_persona_validation()) &
-					(this.EDIT_nuevo_foto_persona_validation())
-					)
-		
-		result = Boolean(result);
-		
-		return result;	
-
-
-	}
-
-	/**
-	 * 
-	 * test dni format in the regular expression
-	 * @param {string} 
-	 * @return {bool} true is regular expression is satified false otherwise  
-	 * */ 
 
         personalize_dni_nie(valor, { showDomErrors = true } = {}){
-
                 const dni = valor ?? document.getElementById('dni')?.value ?? '';
                 const dniFormatResult = this.personalize_dni_format(dni, { showDomErrors });
                 if (dniFormatResult === true){
@@ -497,8 +596,8 @@ class persona extends EntidadAbstracta{
                 }
 
                 return true;
-
         }
+
 	/**
 	 * get dni as parameter, split letter and numbers, calculate
 	 * %23 from number to obtain corresponding letter and compares with letter in dni value
@@ -561,6 +660,15 @@ class persona extends EntidadAbstracta{
 	
 	}
 
+        	ADD_titulacion_persona_validation(){
+		if (document.getElementById('titulacion_persona').value == 'PCEO'){
+			return true;
+		}
+		else{
+			return 'titulacion_persona_valor_KO';
+		}
+	}
+	
         createForm_EDIT(fila){
                 this.renderActionForm('EDIT', fila || {});
 
@@ -719,255 +827,4 @@ class persona extends EntidadAbstracta{
                 }
 
 	}
-
-
-
-
-	
-
-	//
-	//ADD
-	//
-	//ADD_dni_validation(){return true;}
-	//ADD_nombre_persona_validation(){return true;}
-	ADD_titulacion_persona_validation(){
-		if (document.getElementById('titulacion_persona').value == 'PCEO'){
-			return true;
-		}
-		else{
-			return 'titulacion_persona_valor_KO';
-		}
-	}
-	ADD_menu_persona_validation(){
-		var menu = document.getElementsByName('menu_persona');
-		var valores = ['primero', 'segundo', 'postre'];
-		for (var i=0;i<menu.length;i++){
-			if (menu[i].checked){
-				if (valores.includes(menu[i].value))
-				{
-					return true;
-				}
-			}
-		}
-		return 'menu_persona_valor_KO';
-		
-	}
-        ADD_genero_persona_validation(){
-                var menu = document.getElementsByName('genero_persona');
-                var valores = ['Masculino', 'Femenino', 'Otro'];
-                for (var i=0;i<menu.length;i++){
-                        if (menu[i].checked){
-				if (valores.includes(menu[i].value))
-				{
-					return true;
-				}
-			}
-		}
-		return 'genero_persona_valor_KO';
-		
-	}
-        ADD_apellidos_persona_validation(){
-                if (!(this.validations.min_size('apellidos_persona',4))){
-                        this.dom.mostrar_error_campo('apellidos_persona','apellidos_persona_min_size_KO');
-                        return 'apellidos_persona_min_size_KO';
-                }
-                if (!(this.validations.max_size('apellidos_persona',20))){
-                        this.dom.mostrar_error_campo('apellidos_persona','apellidos_persona_max_size_KO');
-                        return 'apellidos_persona_max_size_KO';
-                }
-                if (!(this.validations.format('apellidos_persona','^[A-Za-zÁÉÍÓÚáéíóúÜüÑñ ]+$'))){
-                        this.dom.mostrar_error_campo('apellidos_persona','apellidos_persona_format_KO');
-                        return 'apellidos_persona_format_KO';
-                }
-                this.dom.mostrar_exito_campo('apellidos_persona');
-                return true;
-        }
-        ADD_fechaNacimiento_persona_validation(){
-                const rawValue = document.getElementById('fechaNacimiento_persona').value;
-                const regExp = '^\\d{2}\/\\d{2}\/\\d{4}$';
-
-                if (!(this.validations.format('fechaNacimiento_persona', regExp))){
-                        this.dom.mostrar_error_campo('fechaNacimiento_persona','fechaNacimiento_persona_format_KO');
-                        return 'fechaNacimiento_persona_format_KO';
-                }
-
-                const [day, month, year] = rawValue.split('/').map(Number);
-                const parsedDate = new Date(`${year}-${month}-${day}`);
-                const isValidDate = parsedDate && (parsedDate.getMonth() + 1) === month && parsedDate.getDate() === day && parsedDate.getFullYear() === year;
-
-                if (!isValidDate){
-                        this.dom.mostrar_error_campo('fechaNacimiento_persona','fechaNacimiento_persona_valid_KO');
-                        return 'fechaNacimiento_persona_valid_KO';
-                }
-
-                this.dom.mostrar_exito_campo('fechaNacimiento_persona');
-                return true;
-        }
-        ADD_direccion_persona_validation(){
-                if (!(this.validations.min_size('direccion_persona',5))){
-                        this.dom.mostrar_error_campo('direccion_persona','direccion_persona_min_size_KO');
-                        return 'direccion_persona_min_size_KO';
-                }
-                if (!(this.validations.max_size('direccion_persona',200))){
-                        this.dom.mostrar_error_campo('direccion_persona','direccion_persona_max_size_KO');
-                        return 'direccion_persona_max_size_KO';
-                }
-                this.dom.mostrar_exito_campo('direccion_persona');
-                return true;
-        }
-        ADD_telefono_persona_validation(){
-                if (!(this.validations.min_size('telefono_persona',9))){
-                        this.dom.mostrar_error_campo('telefono_persona','telefono_persona_min_size_KO');
-                        return 'telefono_persona_min_size_KO';
-                }
-                if (!(this.validations.max_size('telefono_persona',9))){
-                        this.dom.mostrar_error_campo('telefono_persona','telefono_persona_max_size_KO');
-                        return 'telefono_persona_max_size_KO';
-                }
-                if (!(this.validations.format('telefono_persona','^\\d{9}$'))){
-                        this.dom.mostrar_error_campo('telefono_persona','telefono_persona_format_KO');
-                        return 'telefono_persona_format_KO';
-                }
-                this.dom.mostrar_exito_campo('telefono_persona');
-                return true;
-        }
-        ADD_email_persona_validation(){
-                if (!(this.validations.min_size('email_persona',6))){
-                        this.dom.mostrar_error_campo('email_persona','email_persona_min_size_KO');
-                        return 'email_persona_min_size_KO';
-                }
-                if (!(this.validations.max_size('email_persona',60))){
-                        this.dom.mostrar_error_campo('email_persona','email_persona_max_size_KO');
-                        return 'email_persona_max_size_KO';
-                }
-                if (!(this.validations.format('email_persona','^[\\\w.+-]+@[\\\w.-]+\\.[A-Za-z]{2,}$'))){
-                        this.dom.mostrar_error_campo('email_persona','email_persona_format_KO');
-                        return 'email_persona_format_KO';
-                }
-                this.dom.mostrar_exito_campo('email_persona');
-                return true;
-        }
-        ADD_foto_persona_validation(){
-                if (!(this.validations.max_size('foto_persona',100))){
-                        this.dom.mostrar_error_campo('foto_persona','foto_persona_max_size_KO');
-                        return 'foto_persona_max_size_KO';
-                }
-                this.dom.mostrar_exito_campo('foto_persona');
-                return true;
-        }
-        //ADD_nuevo_foto_persona_validation(){return true;}
-
-	//
-	//EDIT
-	//
-        EDIT_dni_validation(){return this.ADD_dni_validation();}
-        //EDIT_nombre_persona_validation(){return true;}
-        EDIT_apellidos_persona_validation(){return this.ADD_apellidos_persona_validation();}
-        EDIT_fechaNacimiento_persona_validation(){return this.ADD_fechaNacimiento_persona_validation();}
-        EDIT_direccion_persona_validation(){return this.ADD_direccion_persona_validation();}
-        EDIT_telefono_persona_validation(){return this.ADD_telefono_persona_validation();}
-        EDIT_email_persona_validation(){return this.ADD_email_persona_validation();}
-        EDIT_titulacion_persona_validation(){return this.ADD_titulacion_persona_validation();}
-        EDIT_menu_persona_validation(){return this.ADD_menu_persona_validation();}
-        EDIT_genero_persona_validation(){return this.ADD_genero_persona_validation();}
-        EDIT_foto_persona_validation(){return this.ADD_foto_persona_validation();}
-        //EDIT_nuevo_foto_persona_validation(){return true;}
-
-	//
-	//SEARCH
-	//
-        SEARCH_dni_validation(){
-                const valor = document.getElementById('dni').value;
-                if (valor === '') return true;
-                if (!(this.validations.max_size('dni',9))){
-                        this.dom.mostrar_error_campo('dni','dni_max_size_KO');
-                        return 'dni_max_size_KO';
-                }
-                if (!(this.validations.format('dni','^[0-9XYZ]?[0-9]{0,7}[A-Z]?$'))){
-                        this.dom.mostrar_error_campo('dni','dni_format_KO');
-                        return 'dni_format_KO';
-                }
-                this.dom.mostrar_exito_campo('dni');
-                return true;
-        }
-        SEARCH_nombre_persona_validation(){
-                const valor = document.getElementById('nombre_persona').value;
-                if (valor === '') return true;
-                if (!(this.validations.max_size('nombre_persona',40))){
-                        this.dom.mostrar_error_campo('nombre_persona','nombre_persona_max_size_KO');
-                        return 'nombre_persona_max_size_KO';
-                }
-                this.dom.mostrar_exito_campo('nombre_persona');
-                return true;
-        }
-        SEARCH_apellidos_persona_validation(){
-                const valor = document.getElementById('apellidos_persona').value;
-                if (valor === '') return true;
-                if (!(this.validations.max_size('apellidos_persona',60))){
-                        this.dom.mostrar_error_campo('apellidos_persona','apellidos_persona_max_size_KO');
-                        return 'apellidos_persona_max_size_KO';
-                }
-                this.dom.mostrar_exito_campo('apellidos_persona');
-                return true;
-        }
-        SEARCH_fechaNacimiento_persona_validation(){
-                const valor = document.getElementById('fechaNacimiento_persona').value;
-                if (valor === '') return true;
-                if (!(this.validations.format('fechaNacimiento_persona','^\\d{2}\/\\d{2}\/\\d{4}$'))){
-                        this.dom.mostrar_error_campo('fechaNacimiento_persona','fechaNacimiento_persona_format_KO');
-                        return 'fechaNacimiento_persona_format_KO';
-                }
-                this.dom.mostrar_exito_campo('fechaNacimiento_persona');
-                return true;
-        }
-        SEARCH_direccion_persona_validation(){
-                const valor = document.getElementById('direccion_persona').value;
-                if (valor === '') return true;
-                if (!(this.validations.max_size('direccion_persona',200))){
-                        this.dom.mostrar_error_campo('direccion_persona','direccion_persona_max_size_KO');
-                        return 'direccion_persona_max_size_KO';
-                }
-                this.dom.mostrar_exito_campo('direccion_persona');
-                return true;
-        }
-        SEARCH_telefono_persona_validation(){
-                const valor = document.getElementById('telefono_persona').value;
-                if (valor === '') return true;
-                if (!(this.validations.max_size('telefono_persona',9))){
-                        this.dom.mostrar_error_campo('telefono_persona','telefono_persona_max_size_KO');
-                        return 'telefono_persona_max_size_KO';
-                }
-                if (!(this.validations.format('telefono_persona','^\\d{9}$'))){
-                        this.dom.mostrar_error_campo('telefono_persona','telefono_persona_format_KO');
-                        return 'telefono_persona_format_KO';
-                }
-                this.dom.mostrar_exito_campo('telefono_persona');
-                return true;
-        }
-        SEARCH_email_persona_validation(){
-                const valor = document.getElementById('email_persona').value;
-                if (valor === '') return true;
-                if (!(this.validations.max_size('email_persona',60))){
-                        this.dom.mostrar_error_campo('email_persona','email_persona_max_size_KO');
-                        return 'email_persona_max_size_KO';
-                }
-                if (!(this.validations.format('email_persona','^[\\\w.+-]+@[\\\w.-]+\\.[A-Za-z]{2,}$'))){
-                        this.dom.mostrar_error_campo('email_persona','email_persona_format_KO');
-                        return 'email_persona_format_KO';
-                }
-                this.dom.mostrar_exito_campo('email_persona');
-                return true;
-        }
-        SEARCH_titulacion_persona_validation(){return true;}
-        SEARCH_menu_persona_validation(){return true;}
-        SEARCH_genero_persona_validation(){return true;}
-        SEARCH_foto_persona_validation(){return true;}
-        SEARCH_nuevo_foto_persona_validation(){return true;}
-
-	//
-	//submits
-	//
-	EDIT_submit_persona(){return true;}
-	SEARCH_submit_persona(){return true;}
-
 }
